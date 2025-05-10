@@ -4,6 +4,32 @@ from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.events import SlotSet
 
 class ActionTimThongTinNganh(Action):
+    NGANH_CANONICAL_MAP = {
+        # Khoa học máy tính
+        "khoa học máy tính": "Khoa học máy tính",
+        "khmt": "Khoa học máy tính",
+        "khoa hoc may tinh": "Khoa học máy tính",
+        # An toàn thông tin
+        "an toàn thông tin": "An toàn thông tin",
+        "attt": "An toàn thông tin",
+        "at": "An toàn thông tin",
+        "an toan thong tin": "An toàn thông tin",
+        # Công nghệ thông tin
+        "công nghệ thông tin": "Công nghệ thông tin",
+        "cntt": "Công nghệ thông tin",
+        "cnt": "Công nghệ thông tin",
+        "cong nghe thong tin": "Công nghệ thông tin",
+        # Hệ thống thông tin
+        "hệ thống thông tin": "Hệ thống thông tin",
+        "httt": "Hệ thống thông tin",
+        "ht": "Hệ thống thông tin",
+        "he thong thong tin": "Hệ thống thông tin",
+        # Kỹ thuật máy tính
+        "kỹ thuật máy tính": "Kỹ thuật máy tính",
+        "ktmt": "Kỹ thuật máy tính",
+        "ky thuat may tinh": "Kỹ thuật máy tính",
+    }
+
     def name(self) -> Text:
         return "action_tim_thong_tin_nganh"
 
@@ -11,8 +37,13 @@ class ActionTimThongTinNganh(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
-        nganh_entity = tracker.get_slot("nganh")
+        nganh_entity_original = tracker.get_slot("nganh") # Giữ lại tên gốc
         intent_name = tracker.latest_message['intent'].get('name')
+
+        canonical_nganh_name = None
+        if nganh_entity_original:
+            normalized_entity = nganh_entity_original.lower()
+            canonical_nganh_name = self.NGANH_CANONICAL_MAP.get(normalized_entity)
         
         nganh_info_db = {
             "An toàn thông tin": {
@@ -47,34 +78,42 @@ class ActionTimThongTinNganh(Action):
             }
         }
         
-        response = f"Tôi không tìm thấy thông tin về ngành {nganh_entity} bạn yêu cầu cho đợt 1 năm 2025. " \
-                   f"Các ngành tuyển sinh Thạc sĩ đợt 1 năm 2025 (tham khảo) gồm: An toàn thông tin, Công nghệ thông tin, " \
-                   f"Hệ thống thông tin, Khoa học máy tính, Kỹ thuật máy tính. Vui lòng kiểm tra thông báo tuyển sinh chính thức."
+        response = "Tôi không tìm thấy thông tin về ngành bạn yêu cầu cho đợt 1 năm 2025. " \
+                   "Các ngành tuyển sinh Thạc sĩ đợt 1 năm 2025 (tham khảo) gồm: An toàn thông tin, Công nghệ thông tin, " \
+                   "Hệ thống thông tin, Khoa học máy tính, Kỹ thuật máy tính. Vui lòng kiểm tra thông báo tuyển sinh chính thức."
 
-        if nganh_entity and nganh_entity in nganh_info_db:
-            info = nganh_info_db[nganh_entity]
+        # Sử dụng canonical_nganh_name để tra cứu
+        if canonical_nganh_name and canonical_nganh_name in nganh_info_db:
+            info = nganh_info_db[canonical_nganh_name]
+            display_name = canonical_nganh_name # Sử dụng tên chuẩn để hiển thị
             
             if intent_name == "hoi_ma_nganh":
-                response = f"Mã ngành của {nganh_entity} là: {info['ma_nganh']}."
+                response = f"Mã ngành của {display_name} là: {info['ma_nganh']}."
             elif intent_name == "hoi_chi_tieu_nganh":
-                response = f"Chỉ tiêu dự kiến cho ngành {nganh_entity} đợt 1 năm 2025 là: {info['chi_tieu']}."
+                response = f"Chỉ tiêu dự kiến cho ngành {display_name} đợt 1 năm 2025 là: {info['chi_tieu']}."
             elif intent_name == "hoi_thong_tin_chi_tiet_nganh":
-                response = f"Thông tin chung về ngành {nganh_entity} (tham khảo cho đợt 1 năm 2025):\n"
+                response = f"Thông tin chung về ngành {display_name} (tham khảo cho đợt 1 năm 2025):\n"
                 response += f"- Mô tả: {info.get('thong_tin_chung', 'Chưa có thông tin mô tả chi tiết.')}\n"
                 response += f"- Mã ngành: {info['ma_nganh']}\n"
                 response += f"- Chỉ tiêu dự kiến: {info['chi_tieu']}\n"
                 response += f"- Điều kiện chung: {info['dieu_kien']}. (Lưu ý: Đây là thông tin tham khảo, vui lòng xem điều kiện chi tiết và các yêu cầu bổ sung trong thông báo tuyển sinh chính thức đợt 1 năm 2025)."
             # Fallback nếu intent không khớp rõ ràng nhưng slot nganh có giá trị
             else: 
-                response = f"Thông tin tuyển sinh Thạc sĩ đợt 1 năm 2025 cho ngành {nganh_entity}:\n"
+                response = f"Thông tin tuyển sinh Thạc sĩ đợt 1 năm 2025 cho ngành {display_name}:\n"
                 response += f"- Mã ngành: {info['ma_nganh']}\n"
                 response += f"- Chỉ tiêu dự kiến: {info['chi_tieu']}\n"
                 response += f"- Điều kiện chung: {info['dieu_kien']}. (Lưu ý: Đây là thông tin tham khảo, vui lòng xem điều kiện chi tiết và các yêu cầu bổ sung trong thông báo tuyển sinh chính thức đợt 1 năm 2025)."
+        elif nganh_entity_original: # Nếu có entity gốc nhưng không map được hoặc không có trong db
+            response = f"Tôi không tìm thấy thông tin chi tiết về ngành '{nganh_entity_original}' bạn yêu cầu cho đợt 1 năm 2025. " \
+                       f"Các ngành tuyển sinh Thạc sĩ đợt 1 năm 2025 (tham khảo) gồm: An toàn thông tin, Công nghệ thông tin, " \
+                       f"Hệ thống thông tin, Khoa học máy tính, Kỹ thuật máy tính. Vui lòng kiểm tra thông báo tuyển sinh chính thức."
 
         dispatcher.utter_message(text=response)
         
-        # Giữ lại slot 'nganh' nếu muốn dùng cho các lượt sau, hoặc set lại None nếu không cần
-        return [SlotSet("nganh", nganh_entity)]
+        # Giữ lại slot 'nganh' là tên đã được chuẩn hóa nếu có, nếu không thì giữ tên gốc hoặc None
+        # Điều này quan trọng cho các lượt hội thoại tiếp theo
+        slot_to_set = canonical_nganh_name if canonical_nganh_name else nganh_entity_original
+        return [SlotSet("nganh", slot_to_set)]
 
 class ActionTimThongTinChungChi(Action):
     def name(self) -> Text:

@@ -62,3 +62,14 @@ stories:
   steps:
   - intent: goodbye
   - action: utter_goodbye
+
+- story: Hỏi mã ngành sau đó hỏi thông tin chi tiết ngành (có ngữ cảnh)
+  steps:
+  - intent: hoi_ma_nganh
+    entities:
+    - nganh: "Khoa học máy tính"
+  - slot_was_set:
+    - nganh: "Khoa học máy tính"
+  - action: action_tim_thong_tin_nganh
+  - intent: hoi_thong_tin_chi_tiet_nganh
+  - action: action_tim_thong_tin_nganh

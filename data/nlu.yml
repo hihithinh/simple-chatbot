@@ -16,6 +16,22 @@ nlu:
     - Thông tin về ngành [Công nghệ thông tin](nganh)
     - Ngành [Hệ thống thông tin](nganh) tuyển sinh như thế nào?
     - Tôi muốn biết về ngành [Kỹ thuật máy tính](nganh)
+    - [Khoa học máy tính](nganh) là gì?
+    - cho tôi biết về ngành [Khoa học máy tính](nganh)
+    - ngành [Khoa học máy tính](nganh) học gì
+    - thông tin chi tiết của ngành [Khoa học máy tính](nganh)
+    - [Khoa học máy tính](nganh) là ngành như thế nào?
+    - mô tả ngành [Khoa học máy tính](nganh)
+    - ngành này học gì?
+    - ngành đó dạy những gì?
+    - kể thêm về ngành này được không?
+    - chi tiết về ngành đó?
+    - nó cụ thể là như thế nào?
+    - thông tin về [khmt](nganh)
+    - [at](nganh) học gì?
+    - [cnt](nganh) là ngành như thế nào
+    - chi tiết ngành [ht](nganh)
+    - mô tả về [ktmt](nganh)
 
 - intent: hoi_ma_nganh
   examples: |
@@ -26,6 +42,17 @@ nlu:
     - mã ngành [khoa học máy tính](nganh)
     - [an toàn thông tin](nganh) mã ngành là gì
     - mã của ngành [công nghệ thông tin](nganh)
+    - mã ngành của [khoa học máy tính](nganh) là bao nhiêu?
+    - [khoa học máy tính](nganh) có mã ngành là gì?
+    - xin mã ngành [khoa học máy tính](nganh)
+    - ngành [khoa học máy tính](nganh) mã số mấy?
+    - mã ngành [an toàn thông tin](nganh) là gì?
+    - mã ngành [an toàn thông tin](nganh) là gì?
+    - mã ngành [khmt](nganh)
+    - [at](nganh) mã ngành là gì
+    - mã của [cnt](nganh)
+    - mã ngành [ht](nganh) là bao nhiêu
+    - [ktmt](nganh) có mã ngành là gì?
 
 - intent: hoi_chi_tieu_chung
   examples: |
@@ -33,6 +60,12 @@ nlu:
     - Tổng chỉ tiêu tuyển sinh là bao nhiêu?
     - Cho biết chỉ tiêu của các ngành
     - các ngành có bao nhiêu chỉ tiêu
+    - chỉ tiêu của ngành [kỹ thuật máy tính](nganh)
+    - chỉ tiêu [khmt](nganh)
+    - [at](nganh) có bao nhiêu chỉ tiêu
+    - ngành [cnt](nganh) chỉ tiêu là mấy
+    - chỉ tiêu của [ht](nganh) là bao nhiêu
+    - [ktmt](nganh) chỉ tiêu
 
 - intent: hoi_chi_tieu_nganh
   examples: |
