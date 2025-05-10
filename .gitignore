@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+.venv/
+
+# Rasa
+
+# Logs
+logs/
+*.log
+
+# System
+.DS_Store
+.idea/
+.rasa/
+
+# VSCode
+.vscode/
+
+# Env
+.env
+.env.*
+
+# Node/LocalTunnel
+node_modules/
+
+# Others
+*.bak
+*.swp
+*.tmp

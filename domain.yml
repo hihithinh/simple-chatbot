@@ -1,0 +1,96 @@
+version: "3.1"
+intents:
+  - hoi_nganh_tuyen_sinh
+  - hoi_chi_tieu
+  - hoi_thoi_gian
+  - hoi_hinh_thuc_dao_tao
+  - hoi_dieu_kien_du_tuyen
+  - hoi_ho_so_dang_ky
+  - hoi_le_phi
+  - hoi_phuong_thuc_tuyen_sinh
+  - hoi_quy_trinh_xet_tuyen
+  - hoi_tieu_chi_trung_tuyen
+  - hoi_mien_ngoai_ngu
+  - hoi_cau_truc_de_thi
+  - hoi_on_tap_tieng_anh
+  - hoi_dang_ky_online
+  - hoi_giay_to_ngoai_ngu
+  - hoi_ket_qua
+  - hoi_nhap_hoc
+  - hoi_lien_he
+  - greet
+  - goodbye
+  - nlu_fallback
+entities:
+  - nganh
+  - ma_nganh
+  - chi_tieu
+  - dia_diem
+  - thoi_gian
+  - loai_ho_so
+  - doi_tuong
+  - le_phi
+  - phuong_thuc
+  - quy_trinh
+  - tieu_chi
+  - chung_chi
+  - bang_cap
+slots:
+  nganh:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: nganh
+  chung_chi:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: chung_chi
+actions:
+  - action_tim_thong_tin_nganh
+  - action_tim_thong_tin_chung_chi
+  - action_tim_thong_tin_le_phi
+  - action_tim_thong_tin_lich_trinh
+responses:
+  utter_greet:
+    - text: "Xin chào! Tôi có thể giúp gì cho bạn về tuyển sinh thạc sĩ?"
+  utter_goodbye:
+    - text: "Cảm ơn bạn đã quan tâm. Chúc bạn thành công!"
+  utter_default:
+    - text: "Xin lỗi, tôi chưa hiểu ý bạn. Bạn có thể hỏi lại rõ hơn không?"
+  utter_ask_nganh:
+    - text: "Các ngành tuyển sinh gồm: An toàn thông tin, Công nghệ thông tin, Hệ thống thông tin, Khoa học máy tính, Kỹ thuật máy tính."
+  utter_ask_chi_tieu:
+    - text: "Chỉ tiêu từng ngành: An toàn thông tin (21), Công nghệ thông tin (49), Hệ thống thông tin (35), Khoa học máy tính (63), Kỹ thuật máy tính (21)."
+  utter_ask_dia_diem:
+    - text: "Địa điểm học: 07-09 Nguyễn Bỉnh Khiêm, P. Bến Nghé, Q.1, TPHCM."
+  utter_ask_le_phi:
+    - text: "Lệ phí xét tuyển: 260.000 đồng/hồ sơ. Lệ phí thi tiếng Anh: 200.000 đồng."
+  utter_ask_thoi_gian:
+    - text: "Thời gian đào tạo: 2 năm. Thi tiếng Anh ngày 25/5/2025. Hạn nộp hồ sơ: 30/5/2025."
+  utter_ask_ho_so:
+    - text: "Hồ sơ gồm: bìa hồ sơ, phiếu đăng ký, bản sao văn bằng, bảng điểm, chứng chỉ ngoại ngữ, giấy khám sức khỏe, ảnh 3x4, ..."
+  utter_ask_dieu_kien:
+    - text: "Điều kiện dự tuyển: tốt nghiệp đại học ngành phù hợp, đủ sức khỏe, lý lịch rõ ràng, đáp ứng điều kiện ngoại ngữ."
+  utter_ask_mien_ngoai_ngu:
+    - text: "Miễn thi ngoại ngữ nếu có bằng đại học ngành ngôn ngữ, bằng nước ngoài, hoặc chứng chỉ B1/bậc 3 trở lên."
+  utter_ask_lien_he:
+    - text: "Liên hệ Phòng Đào tạo Sau đại học: sdh@uit.edu.vn, 028-38221932 (số nội bộ 112)."
+  utter_ask_phuong_thuc_tuyen_sinh:
+    - text: "Phương thức tuyển sinh gồm: xét tuyển hồ sơ, phỏng vấn chuyên môn và đánh giá năng lực tiếng Anh (nếu không được miễn)."
+  utter_ask_quy_trinh_xet_tuyen:
+    - text: "Quy trình xét tuyển: (1) Sơ tuyển hồ sơ, (2) Tiểu ban chuyên môn đánh giá, (3) Thi đánh giá năng lực tiếng Anh (nếu không được miễn), (4) Hội đồng tuyển sinh xét tuyển dựa trên kết quả các bước trên."
+  utter_ask_tieu_chi_trung_tuyen:
+    - text: "Tiêu chí trúng tuyển: đạt yêu cầu về chuyên môn qua phỏng vấn (tối thiểu 5/10 điểm), đạt yêu cầu về năng lực ngoại ngữ (tối thiểu 50/100 điểm hoặc được miễn), và nằm trong chỉ tiêu của ngành."
+  utter_ask_cau_truc_de_thi:
+    - text: "Cấu trúc đề thi tiếng Anh gồm: Ngữ pháp-Từ vựng (40 điểm), Đọc hiểu (30 điểm), Viết (30 điểm). Thời gian làm bài 90 phút."
+  utter_ask_on_tap_tieng_anh:
+    - text: "Lớp ôn tập tiếng Anh được tổ chức từ ngày 10/4/2025 đến 20/5/2025. Đăng ký tại Phòng Đào tạo Sau đại học hoặc qua email sdh@uit.edu.vn."
+  utter_ask_dang_ky_online:
+    - text: "Đăng ký online tại website: http://tuyensinh.uit.edu.vn. Sau khi đăng ký online, bạn vẫn cần nộp hồ sơ bản in theo quy định."
+  utter_ask_giay_to_ngoai_ngu:
+    - text: "Giấy tờ ngoại ngữ cần nộp: bản sao có công chứng chứng chỉ ngoại ngữ (IELTS, TOEFL, TOEIC...) hoặc bằng tốt nghiệp đại học ngành ngôn ngữ, hoặc bằng tốt nghiệp đại học tại cơ sở đào tạo nước ngoài."
+  utter_ask_ket_qua:
+    - text: "Kết quả xét tuyển sẽ được công bố vào ngày 15/6/2025 trên website tuyensinh.uit.edu.vn và niêm yết tại Phòng Đào tạo Sau đại học."
+  utter_ask_nhap_hoc:
+    - text: "Nhập học từ ngày 01/7/2025 đến 15/7/2025. Khai giảng dự kiến vào ngày 01/8/2025. Thủ tục nhập học gồm: giấy báo trúng tuyển, các giấy tờ trong hồ sơ gốc, và lệ phí nhập học."
