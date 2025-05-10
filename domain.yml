@@ -1,9 +1,12 @@
 version: "3.1"
 intents:
-  - hoi_nganh_tuyen_sinh
-  - hoi_chi_tieu
-  - hoi_thoi_gian
+  - hoi_danh_sach_nganh
+  - hoi_thong_tin_chi_tiet_nganh
+  - hoi_ma_nganh
+  - hoi_chi_tieu_nganh
+  - hoi_chi_tieu_chung
   - hoi_hinh_thuc_dao_tao
+  - hoi_thoi_gian
   - hoi_dieu_kien_du_tuyen
   - hoi_ho_so_dang_ky
   - hoi_le_phi
@@ -53,44 +56,44 @@ actions:
   - action_tim_thong_tin_lich_trinh
 responses:
   utter_greet:
-    - text: "Xin chào! Tôi có thể giúp gì cho bạn về tuyển sinh thạc sĩ?"
+    - text: "Xin chào! Tôi có thể giúp gì cho bạn về tuyển sinh thạc sĩ đợt 1 năm 2025?"
   utter_goodbye:
     - text: "Cảm ơn bạn đã quan tâm. Chúc bạn thành công!"
   utter_default:
     - text: "Xin lỗi, tôi chưa hiểu ý bạn. Bạn có thể hỏi lại rõ hơn không?"
   utter_ask_nganh:
-    - text: "Các ngành tuyển sinh gồm: An toàn thông tin, Công nghệ thông tin, Hệ thống thông tin, Khoa học máy tính, Kỹ thuật máy tính."
-  utter_ask_chi_tieu:
-    - text: "Chỉ tiêu từng ngành: An toàn thông tin (21), Công nghệ thông tin (49), Hệ thống thông tin (35), Khoa học máy tính (63), Kỹ thuật máy tính (21)."
-  utter_ask_dia_diem:
-    - text: "Địa điểm học: 07-09 Nguyễn Bỉnh Khiêm, P. Bến Nghé, Q.1, TPHCM."
+    - text: "Các ngành tuyển sinh Thạc sĩ đợt 1 năm 2025 gồm: An toàn thông tin, Công nghệ thông tin, Hệ thống thông tin, Khoa học máy tính, Kỹ thuật máy tính."
+  utter_ask_chi_tieu_chung:
+    - text: "Chỉ tiêu tuyển sinh Thạc sĩ đợt 1 năm 2025 cho từng ngành: An toàn thông tin (21), Công nghệ thông tin (49), Hệ thống thông tin (35), Khoa học máy tính (63), Kỹ thuật máy tính (21)."
+  utter_ask_hinh_thuc_dao_tao:
+    - text: "Chương trình Thạc sĩ đợt 1 năm 2025 được đào tạo theo hình thức chính quy tập trung. Thời gian học theo kế hoạch của nhà trường. Địa điểm học tập trung tại cơ sở chính: 07-09 Nguyễn Bỉnh Khiêm, Phường Bến Nghé, Quận 1, TP.HCM. (Vui lòng xác minh và cập nhật chi tiết về hình thức, thởi gian và việc đào tạo online từ thông báo tuyển sinh chính thức đợt 1 năm 2025)."
   utter_ask_le_phi:
-    - text: "Lệ phí xét tuyển: 260.000 đồng/hồ sơ. Lệ phí thi tiếng Anh: 200.000 đồng."
+    - text: "Lệ phí tuyển sinh Thạc sĩ đợt 1 năm 2025: Lệ phí xét tuyển là 260.000 đồng/hồ sơ. Lệ phí thi tiếng Anh (nếu có) là 200.000 đồng. Để biết thêm chi tiết về các lệ phí khác như ôn tập tiếng Anh, vui lòng hỏi cụ thể hoặc xem thông báo tuyển sinh chính thức."
   utter_ask_thoi_gian:
-    - text: "Thời gian đào tạo: 2 năm. Thi tiếng Anh ngày 25/5/2025. Hạn nộp hồ sơ: 30/5/2025."
-  utter_ask_ho_so:
-    - text: "Hồ sơ gồm: bìa hồ sơ, phiếu đăng ký, bản sao văn bằng, bảng điểm, chứng chỉ ngoại ngữ, giấy khám sức khỏe, ảnh 3x4, ..."
+    - text: "Thời gian đào tạo chương trình Thạc sĩ theo thiết kế là 2 năm. Để biết lịch trình tuyển sinh chi tiết cho đợt 1 năm 2025, bao gồm hạn nộp hồ sơ và ngày thi, vui lòng hỏi về 'lịch trình tuyển sinh'. (Thông tin chi tiết và đầy đủ nhất luôn có trong thông báo tuyển sinh chính thức đợt 1 năm 2025)."
+  utter_ask_ho_so_dang_ky:
+    - text: "Hồ sơ dự tuyển Thạc sĩ đợt 1 năm 2025 gồm các giấy tờ cơ bản như: bìa hồ sơ, phiếu đăng ký, bản sao văn bằng, bảng điểm, chứng chỉ ngoại ngữ (nếu có), giấy khám sức khỏe, ảnh 3x4, ... (Vui lòng xác minh danh mục đầy đủ và chi tiết từ thông báo tuyển sinh chính thức đợt 1 năm 2025)."
   utter_ask_dieu_kien:
-    - text: "Điều kiện dự tuyển: tốt nghiệp đại học ngành phù hợp, đủ sức khỏe, lý lịch rõ ràng, đáp ứng điều kiện ngoại ngữ."
+    - text: "Các điều kiện chung để dự tuyển Thạc sĩ đợt 1 năm 2025 bao gồm: tốt nghiệp đại học ngành phù hợp, đủ sức khỏe theo quy định, lý lịch rõ ràng, và đáp ứng các điều kiện về ngoại ngữ. Điều kiện cụ thể cho từng ngành và chi tiết về miễn thi ngoại ngữ có thể khác nhau. Vui lòng hỏi cụ thể hơn hoặc tham khảo thông báo tuyển sinh chính thức đợt 1 năm 2025."
   utter_ask_mien_ngoai_ngu:
-    - text: "Miễn thi ngoại ngữ nếu có bằng đại học ngành ngôn ngữ, bằng nước ngoài, hoặc chứng chỉ B1/bậc 3 trở lên."
+    - text: "Điều kiện miễn thi ngoại ngữ đầu vào cho đợt 1 năm 2025 thường bao gồm các trường hợp như có bằng đại học chuyên ngành ngôn ngữ, bằng tốt nghiệp đại học/thạc sĩ ở nước ngoài nơi ngôn ngữ giảng dạy là tiếng Anh, hoặc có các chứng chỉ ngoại ngữ quốc tế còn hiệu lực (ví dụ: IELTS, TOEFL, B1 VSTEP...) đạt ngưỡng quy định. Để biết chi tiết các chứng chỉ được chấp nhận và mức điểm yêu cầu, bạn có thể hỏi về 'thông tin chứng chỉ' hoặc xem thông báo tuyển sinh chính thức đợt 1 năm 2025."
   utter_ask_lien_he:
-    - text: "Liên hệ Phòng Đào tạo Sau đại học: sdh@uit.edu.vn, 028-38221932 (số nội bộ 112)."
+    - text: "Bạn có thể liên hệ Phòng Đào tạo Sau đại học qua email: sdh@uit.edu.vn hoặc số điện thoại: 028-38221932 (số nội bộ 112) để được hỗ trợ thêm."
   utter_ask_phuong_thuc_tuyen_sinh:
-    - text: "Phương thức tuyển sinh gồm: xét tuyển hồ sơ, phỏng vấn chuyên môn và đánh giá năng lực tiếng Anh (nếu không được miễn)."
+    - text: "Phương thức tuyển sinh Thạc sĩ đợt 1 năm 2025 của trường gồm: xét tuyển hồ sơ, phỏng vấn chuyên môn (tùy ngành) và đánh giá năng lực tiếng Anh đầu vào (đối với các thí sinh không thuộc diện miễn thi)."
   utter_ask_quy_trinh_xet_tuyen:
-    - text: "Quy trình xét tuyển: (1) Sơ tuyển hồ sơ, (2) Tiểu ban chuyên môn đánh giá, (3) Thi đánh giá năng lực tiếng Anh (nếu không được miễn), (4) Hội đồng tuyển sinh xét tuyển dựa trên kết quả các bước trên."
+    - text: "Quy trình xét tuyển Thạc sĩ đợt 1 năm 2025 thường bao gồm các bước: (1) Nộp và sơ tuyển hồ sơ, (2) Tiểu ban chuyên môn xét duyệt hồ sơ và/hoặc phỏng vấn, (3) Tổ chức thi đánh giá năng lực tiếng Anh (nếu không được miễn), (4) Hội đồng tuyển sinh tổng hợp kết quả và công bố danh sách trúng tuyển. (Vui lòng xem quy trình chi tiết trong thông báo tuyển sinh chính thức)."
   utter_ask_tieu_chi_trung_tuyen:
-    - text: "Tiêu chí trúng tuyển: đạt yêu cầu về chuyên môn qua phỏng vấn (tối thiểu 5/10 điểm), đạt yêu cầu về năng lực ngoại ngữ (tối thiểu 50/100 điểm hoặc được miễn), và nằm trong chỉ tiêu của ngành."
+    - text: "Tiêu chí trúng tuyển Thạc sĩ đợt 1 năm 2025 thường dựa trên: điểm xét duyệt hồ sơ chuyên môn, kết quả phỏng vấn (nếu có, ví dụ: tối thiểu 5/10 điểm), đạt yêu cầu về năng lực ngoại ngữ (ví dụ: tối thiểu 50/100 điểm thi đầu vào hoặc thuộc diện miễn thi), và nằm trong chỉ tiêu tuyển sinh của ngành. (Vui lòng xem chi tiết trong thông báo tuyển sinh chính thức)."
   utter_ask_cau_truc_de_thi:
-    - text: "Cấu trúc đề thi tiếng Anh gồm: Ngữ pháp-Từ vựng (40 điểm), Đọc hiểu (30 điểm), Viết (30 điểm). Thời gian làm bài 90 phút."
+    - text: "Cấu trúc đề thi đánh giá năng lực tiếng Anh đầu vào cho tuyển sinh Thạc sĩ đợt 1 năm 2025 (tham khảo) thường gồm các phần: Ngữ pháp-Từ vựng, Đọc hiểu, Viết. Thời gian làm bài và điểm số từng phần sẽ được quy định cụ thể. (Vui lòng xác nhận cấu trúc chính thức từ thông báo tuyển sinh hoặc đơn vị tổ chức thi)."
   utter_ask_on_tap_tieng_anh:
-    - text: "Lớp ôn tập tiếng Anh được tổ chức từ ngày 10/4/2025 đến 20/5/2025. Đăng ký tại Phòng Đào tạo Sau đại học hoặc qua email sdh@uit.edu.vn."
+    - text: "Thông tin về lớp ôn tập tiếng Anh cho kỳ tuyển sinh Thạc sĩ đợt 1 năm 2025 (nếu có): Lớp học dự kiến diễn ra từ 14/3/2025 đến 03/5/2025. Bạn có thể đăng ký tại Phòng Đào tạo Sau đại học hoặc qua email sdh@uit.edu.vn. (Vui lòng kiểm tra thông báo chính thức về việc mở lớp, lịch cụ thể và lệ phí)."
   utter_ask_dang_ky_online:
-    - text: "Đăng ký online tại website: http://tuyensinh.uit.edu.vn. Sau khi đăng ký online, bạn vẫn cần nộp hồ sơ bản in theo quy định."
+    - text: "Bạn có thể đăng ký xét tuyển Thạc sĩ đợt 1 năm 2025 online qua cổng thông tin tuyển sinh của trường (ví dụ: http://tuyensinh.uit.edu.vn). Sau khi hoàn tất đăng ký online, bạn vẫn cần hoàn thiện và nộp hồ sơ bản cứng theo hướng dẫn trong thông báo tuyển sinh."
   utter_ask_giay_to_ngoai_ngu:
-    - text: "Giấy tờ ngoại ngữ cần nộp: bản sao có công chứng chứng chỉ ngoại ngữ (IELTS, TOEFL, TOEIC...) hoặc bằng tốt nghiệp đại học ngành ngôn ngữ, hoặc bằng tốt nghiệp đại học tại cơ sở đào tạo nước ngoài."
+    - text: "Để chứng minh năng lực ngoại ngữ cho đợt 1 năm 2025, bạn cần nộp bản sao có công chứng các chứng chỉ ngoại ngữ quốc tế (ví dụ: IELTS, TOEFL, TOEIC...) còn thởi hạn, hoặc các giấy tờ khác theo quy định miễn thi của trường như bằng tốt nghiệp đại học ngành ngôn ngữ. Để biết chi tiết danh mục và yêu cầu, bạn có thể hỏi về 'thông tin chứng chỉ' hoặc xem thông báo tuyển sinh chính thức."
   utter_ask_ket_qua:
-    - text: "Kết quả xét tuyển sẽ được công bố vào ngày 15/6/2025 trên website tuyensinh.uit.edu.vn và niêm yết tại Phòng Đào tạo Sau đại học."
+    - text: "Kết quả xét tuyển Thạc sĩ đợt 1 năm 2025 dự kiến sẽ được công bố vào tháng 7/2025 trên website tuyển sinh của trường (ví dụ: tuyensinh.uit.edu.vn) và/hoặc niêmyết tại Phòng Đào tạo Sau đại học. (Vui lòng theo dõi thông báo chính thức)."
   utter_ask_nhap_hoc:
-    - text: "Nhập học từ ngày 01/7/2025 đến 15/7/2025. Khai giảng dự kiến vào ngày 01/8/2025. Thủ tục nhập học gồm: giấy báo trúng tuyển, các giấy tờ trong hồ sơ gốc, và lệ phí nhập học."
+    - text: "Thời gian nhập học và khai giảng cho thí sinh trúng tuyển Thạc sĩ đợt 1 năm 2025 dự kiến vào tháng 8/2025. Thủ tục nhập học chi tiết sẽ được hướng dẫn trong giấy báo trúng tuyển. (Vui lòng theo dõi thông báo chính thức)."

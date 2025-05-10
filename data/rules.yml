@@ -8,18 +8,42 @@ rules:
   steps:
   - intent: goodbye
   - action: utter_goodbye
-- rule: Hỏi ngành tuyển sinh
+- rule: Trả lời danh sách các ngành
   steps:
-  - intent: hoi_nganh_tuyen_sinh
+  - intent: hoi_danh_sach_nganh
   - action: utter_ask_nganh
-- rule: Hỏi chỉ tiêu
+- rule: Trả lời chỉ tiêu chung các ngành
   steps:
-  - intent: hoi_chi_tieu
-  - action: utter_ask_chi_tieu
-- rule: Hỏi địa điểm học
+  - intent: hoi_chi_tieu_chung
+  - action: utter_ask_chi_tieu_chung
+- rule: Trả lời thông tin chi tiết ngành khi có entity nganh
+  condition:
+  - active_loop: null
+  - slot_was_set:
+    - nganh: true
+  steps:
+  - intent: hoi_thong_tin_chi_tiet_nganh
+  - action: action_tim_thong_tin_nganh
+- rule: Trả lời mã ngành khi có entity nganh
+  condition:
+  - active_loop: null
+  - slot_was_set:
+    - nganh: true
+  steps:
+  - intent: hoi_ma_nganh
+  - action: action_tim_thong_tin_nganh
+- rule: Trả lời chỉ tiêu ngành khi có entity nganh
+  condition:
+  - active_loop: null
+  - slot_was_set:
+    - nganh: true
+  steps:
+  - intent: hoi_chi_tieu_nganh
+  - action: action_tim_thong_tin_nganh
+- rule: Hỏi hình thức đào tạo
   steps:
   - intent: hoi_hinh_thuc_dao_tao
-  - action: utter_ask_dia_diem
+  - action: utter_ask_hinh_thuc_dao_tao
 - rule: Hỏi lệ phí
   steps:
   - intent: hoi_le_phi
@@ -28,10 +52,10 @@ rules:
   steps:
   - intent: hoi_thoi_gian
   - action: utter_ask_thoi_gian
-- rule: Hỏi hồ sơ
+- rule: Hỏi hồ sơ đăng ký
   steps:
   - intent: hoi_ho_so_dang_ky
-  - action: utter_ask_ho_so
+  - action: utter_ask_ho_so_dang_ky
 - rule: Hỏi điều kiện dự tuyển
   steps:
   - intent: hoi_dieu_kien_du_tuyen

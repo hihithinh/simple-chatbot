@@ -1,14 +1,14 @@
 version: "3.1"
 
 stories:
-- story: Hỏi về ngành và chỉ tiêu
+- story: Hỏi về danh sách ngành và chỉ tiêu chung
   steps:
   - intent: greet
   - action: utter_greet
-  - intent: hoi_nganh_tuyen_sinh
+  - intent: hoi_danh_sach_nganh
   - action: utter_ask_nganh
-  - intent: hoi_chi_tieu
-  - action: utter_ask_chi_tieu
+  - intent: hoi_chi_tieu_chung
+  - action: utter_ask_chi_tieu_chung
 
 - story: Hỏi về điều kiện và miễn ngoại ngữ
   steps:
@@ -40,7 +40,7 @@ stories:
   - intent: hoi_dang_ky_online
   - action: utter_ask_dang_ky_online
   - intent: hoi_ho_so_dang_ky
-  - action: utter_ask_ho_so
+  - action: utter_ask_ho_so_dang_ky
   - intent: hoi_le_phi
   - action: utter_ask_le_phi
 
@@ -56,7 +56,7 @@ stories:
   - intent: hoi_thoi_gian
   - action: utter_ask_thoi_gian
   - intent: hoi_hinh_thuc_dao_tao
-  - action: utter_ask_dia_diem
+  - action: utter_ask_hinh_thuc_dao_tao
 
 - story: Kết thúc hội thoại
   steps:

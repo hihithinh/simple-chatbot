@@ -1,19 +1,46 @@
 version: "3.1"
 nlu:
-- intent: hoi_nganh_tuyen_sinh
+- intent: hoi_danh_sach_nganh
   examples: |
     - Trường có tuyển sinh ngành nào?
     - Cho tôi biết các ngành tuyển sinh thạc sĩ năm 2025
+    - Danh sách ngành tuyển sinh thạc sĩ?
+    - liệt kê các ngành đào tạo thạc sĩ
+    - có những ngành nào vậy
+    - các ngành tuyển sinh
+
+- intent: hoi_thong_tin_chi_tiet_nganh
+  examples: |
     - Ngành [An toàn thông tin](nganh) có tuyển không?
+    - Ngành [Khoa học máy tính](nganh) có tuyển không?
+    - Thông tin về ngành [Công nghệ thông tin](nganh)
+    - Ngành [Hệ thống thông tin](nganh) tuyển sinh như thế nào?
+    - Tôi muốn biết về ngành [Kỹ thuật máy tính](nganh)
+
+- intent: hoi_ma_nganh
+  examples: |
     - Ngành [Công nghệ thông tin](nganh) mã ngành là gì?
     - Ngành [Kỹ thuật máy tính](nganh) có mã ngành là gì?
-    - Danh sách ngành tuyển sinh thạc sĩ?
     - Cho tôi biết mã ngành [Hệ thống thông tin](nganh)
-    - Ngành [Khoa học máy tính](nganh) có tuyển không?
-    - Trường có những ngành nào?
     - Mã ngành [Công nghệ thông tin](nganh) là gì?
-    - Các ngành đào tạo thạc sĩ?
-    - Ngành [Kỹ thuật phần mềm](nganh) có được tuyển không?
+    - mã ngành [khoa học máy tính](nganh)
+    - [an toàn thông tin](nganh) mã ngành là gì
+    - mã của ngành [công nghệ thông tin](nganh)
+
+- intent: hoi_chi_tieu_chung
+  examples: |
+    - Chỉ tiêu các ngành như thế nào?
+    - Tổng chỉ tiêu tuyển sinh là bao nhiêu?
+    - Cho biết chỉ tiêu của các ngành
+    - các ngành có bao nhiêu chỉ tiêu
+
+- intent: hoi_chi_tieu_nganh
+  examples: |
+    - Chỉ tiêu ngành [Khoa học máy tính](nganh) là bao nhiêu?
+    - Có bao nhiêu chỉ tiêu cho ngành [Hệ thống thông tin](nganh)?
+    - Ngành [An toàn thông tin](nganh) có bao nhiêu chỉ tiêu?
+    - [công nghệ thông tin](nganh) chỉ tiêu bao nhiêu
+    - chỉ tiêu của ngành [kỹ thuật máy tính](nganh)
 
 - intent: hoi_thoi_gian
   examples: |
@@ -63,6 +90,10 @@ nlu:
   examples: |
     - Hồ sơ đăng ký gồm những gì?
     - Cần chuẩn bị giấy tờ gì để xét tuyển?
+    - hồ sơ dự tuyển gồm những gì?
+    - chi tiết về hồ sơ dự tuyển?
+    - cần những giấy tờ nào cho hồ sơ dự tuyển?
+    - thành phần của hồ sơ dự tuyển thạc sĩ?
     - Nộp hồ sơ đăng ký ở đâu?
     - Sau khi đăng ký online có cần nộp hồ sơ bản in không?
     - Có cần ảnh 3x4 không?
@@ -74,7 +105,6 @@ nlu:
     - Có cần chứng chỉ kiểm định chương trình không?
     - Có cần chứng nhận kiểm định cơ sở đào tạo không?
     - Hồ sơ có cần túi đựng không?
-    - Đăng ký online như thế nào?
     - Có mẫu phiếu đăng ký không?
 
 - intent: hoi_le_phi
@@ -89,11 +119,9 @@ nlu:
   examples: |
     - Phương thức tuyển sinh là gì?
     - Tuyển sinh bằng hình thức nào?
-    - Có phỏng vấn chuyên môn không?
     - Có thi đánh giá năng lực tiếng Anh không?
     - Có xét tuyển hồ sơ không?
     - Có cần thi đầu vào không?
-    - Có cần phỏng vấn không?
 
 - intent: hoi_quy_trinh_xet_tuyen
   examples: |
@@ -153,7 +181,6 @@ nlu:
     - Link đăng ký trực tuyến là gì?
     - Tôi muốn nộp hồ sơ online thì làm sao?
     - Trang web đăng ký xét tuyển là gì?
-    - Đăng ký online có cần nộp hồ sơ bản in không?
 
 - intent: hoi_giay_to_ngoai_ngu
   examples: |
@@ -188,19 +215,6 @@ nlu:
     - Email liên hệ tuyển sinh?
     - Có thể liên hệ qua đâu nếu có thắc mắc?
     - Tôi muốn hỏi thêm thông tin thì liên hệ ai?
-
-- intent: hoi_chi_tieu
-  examples: |
-    - Chỉ tiêu ngành [Khoa học máy tính](nganh) là bao nhiêu?
-    - Có bao nhiêu chỉ tiêu cho ngành [Hệ thống thông tin](nganh)?
-    - Mỗi ngành có bao nhiêu chỉ tiêu?
-    - Ngành nào có chỉ tiêu cao nhất?
-    - Ngành nào tuyển ít nhất?
-    - Chỉ tiêu tuyển sinh năm nay là bao nhiêu?
-    - Tổng chỉ tiêu các ngành là bao nhiêu?
-    - Chỉ tiêu ngành [An toàn thông tin](nganh) là bao nhiêu?
-    - Trường tuyển bao nhiêu sinh viên thạc sĩ?
-    - Số lượng tuyển sinh mỗi ngành?
 
 entities:
   - nganh
