@@ -21,6 +21,7 @@ logs/
 .vscode/
 
 # Env
+!.env.example
 .env
 .env.*
 

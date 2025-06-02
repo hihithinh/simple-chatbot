@@ -1,0 +1,282 @@
+version: "3.1"
+nlu:
+- intent: hoi_danh_sach_nganh
+  examples: |
+    - Trường có tuyển sinh ngành nào?
+    - Cho tôi biết các ngành tuyển sinh thạc sĩ năm 2025
+    - Danh sách ngành tuyển sinh thạc sĩ?
+    - liệt kê các ngành đào tạo thạc sĩ
+    - có những ngành nào vậy
+    - các ngành tuyển sinh
+
+- intent: hoi_thong_tin_chi_tiet_nganh
+  examples: |
+    - Ngành [An toàn thông tin](nganh) có tuyển không?
+    - Ngành [Khoa học máy tính](nganh) có tuyển không?
+    - Thông tin về ngành [Công nghệ thông tin](nganh)
+    - Ngành [Hệ thống thông tin](nganh) tuyển sinh như thế nào?
+    - Tôi muốn biết về ngành [Kỹ thuật máy tính](nganh)
+    - [Khoa học máy tính](nganh) là gì?
+    - cho tôi biết về ngành [Khoa học máy tính](nganh)
+    - ngành [Khoa học máy tính](nganh) học gì
+    - thông tin chi tiết của ngành [Khoa học máy tính](nganh)
+    - [Khoa học máy tính](nganh) là ngành như thế nào?
+    - mô tả ngành [Khoa học máy tính](nganh)
+    - ngành này học gì?
+    - ngành đó dạy những gì?
+    - kể thêm về ngành này được không?
+    - chi tiết về ngành đó?
+    - nó cụ thể là như thế nào?
+    - thông tin về [khmt](nganh)
+    - [at](nganh) học gì?
+    - [cnt](nganh) là ngành như thế nào
+    - chi tiết ngành [ht](nganh)
+    - mô tả về [ktmt](nganh)
+
+- intent: hoi_ma_nganh
+  examples: |
+    - Ngành [Công nghệ thông tin](nganh) mã ngành là gì?
+    - Ngành [Kỹ thuật máy tính](nganh) có mã ngành là gì?
+    - Cho tôi biết mã ngành [Hệ thống thông tin](nganh)
+    - Mã ngành [Công nghệ thông tin](nganh) là gì?
+    - mã ngành [khoa học máy tính](nganh)
+    - [an toàn thông tin](nganh) mã ngành là gì
+    - mã của ngành [công nghệ thông tin](nganh)
+    - mã ngành của [khoa học máy tính](nganh) là bao nhiêu?
+    - [khoa học máy tính](nganh) có mã ngành là gì?
+    - xin mã ngành [khoa học máy tính](nganh)
+    - ngành [khoa học máy tính](nganh) mã số mấy?
+    - mã ngành [an toàn thông tin](nganh) là gì?
+    - mã ngành [an toàn thông tin](nganh) là gì?
+    - mã ngành [khmt](nganh)
+    - [at](nganh) mã ngành là gì
+    - mã của [cnt](nganh)
+    - mã ngành [ht](nganh) là bao nhiêu
+    - [ktmt](nganh) có mã ngành là gì?
+
+- intent: hoi_chi_tieu_chung
+  examples: |
+    - Chỉ tiêu các ngành như thế nào?
+    - Tổng chỉ tiêu tuyển sinh là bao nhiêu?
+    - Cho biết chỉ tiêu của các ngành
+    - các ngành có bao nhiêu chỉ tiêu
+    - chỉ tiêu của ngành [kỹ thuật máy tính](nganh)
+    - chỉ tiêu [khmt](nganh)
+    - [at](nganh) có bao nhiêu chỉ tiêu
+    - ngành [cnt](nganh) chỉ tiêu là mấy
+    - chỉ tiêu của [ht](nganh) là bao nhiêu
+    - [ktmt](nganh) chỉ tiêu
+
+- intent: hoi_chi_tieu_nganh
+  examples: |
+    - Chỉ tiêu ngành [Khoa học máy tính](nganh) là bao nhiêu?
+    - Có bao nhiêu chỉ tiêu cho ngành [Hệ thống thông tin](nganh)?
+    - Ngành [An toàn thông tin](nganh) có bao nhiêu chỉ tiêu?
+    - [công nghệ thông tin](nganh) chỉ tiêu bao nhiêu
+    - chỉ tiêu của ngành [kỹ thuật máy tính](nganh)
+
+- intent: hoi_thoi_gian
+  examples: |
+    - Khi nào bắt đầu xét tuyển?
+    - Thời gian xét tuyển là khi nào?
+    - Bao giờ thi đánh giá năng lực tiếng Anh?
+    - Thời gian ôn tập tiếng Anh là từ ngày nào đến ngày nào?
+    - Hạn nộp hồ sơ xét tuyển là khi nào?
+    - Thời gian công bố kết quả là ngày nào?
+    - Khi nào khai giảng, nhập học?
+    - Thời gian đào tạo là bao lâu?
+    - Thời gian học là mấy năm?
+    - Hạn nộp hồ sơ lần 2 là ngày nào?
+    - Khi nào công bố kết quả trúng tuyển?
+    - Khi nào bắt đầu học?
+
+- intent: hoi_hinh_thuc_dao_tao
+  examples: |
+    - Học ở đâu?
+    - Hình thức đào tạo như thế nào?
+    - Địa điểm học ở đâu?
+    - Học tập trung hay không?
+    - Địa chỉ trường là gì?
+    - Học tại cơ sở nào?
+    - Có học online không?
+    - Thời gian học tập trung bao lâu?
+
+- intent: hoi_dieu_kien_du_tuyen
+  examples: |
+    - Điều kiện dự tuyển thạc sĩ là gì?
+    - Ai được đăng ký xét tuyển?
+    - Điều kiện miễn ngoại ngữ như thế nào?
+    - Làm sao để được miễn thi tiếng Anh đầu vào?
+    - Cần chứng chỉ ngoại ngữ gì để được miễn thi?
+    - Đối tượng nào được miễn ngoại ngữ?
+    - Điều kiện văn bằng ra sao?
+    - Có cần tốt nghiệp đúng ngành không?
+    - Điều kiện sức khỏe thế nào?
+    - Có cần xác nhận lý lịch không?
+    - Hồ sơ có cần nộp đúng hạn không?
+    - Điều kiện ưu tiên xét tuyển là gì?
+    - Điều kiện ngoại ngữ cụ thể ra sao?
+    - Điều kiện dành cho bằng nước ngoài?
+    - Có cần xác minh văn bằng nước ngoài không?
+
+- intent: hoi_ho_so_dang_ky
+  examples: |
+    - Hồ sơ đăng ký gồm những gì?
+    - Cần chuẩn bị giấy tờ gì để xét tuyển?
+    - hồ sơ dự tuyển gồm những gì?
+    - chi tiết về hồ sơ dự tuyển?
+    - cần những giấy tờ nào cho hồ sơ dự tuyển?
+    - thành phần của hồ sơ dự tuyển thạc sĩ?
+    - Nộp hồ sơ đăng ký ở đâu?
+    - Sau khi đăng ký online có cần nộp hồ sơ bản in không?
+    - Có cần ảnh 3x4 không?
+    - Có cần giấy khám sức khỏe không?
+    - Cần bản sao giấy tờ nào?
+    - Có cần giấy xác nhận sinh viên thủ khoa không?
+    - Có cần bảng điểm bổ túc kiến thức không?
+    - Có cần giấy chứng nhận đối tượng chính sách không?
+    - Có cần chứng chỉ kiểm định chương trình không?
+    - Có cần chứng nhận kiểm định cơ sở đào tạo không?
+    - Hồ sơ có cần túi đựng không?
+    - Có mẫu phiếu đăng ký không?
+
+- intent: hoi_le_phi
+  examples: |
+    - Lệ phí xét tuyển là bao nhiêu?
+    - Lệ phí thi đánh giá năng lực tiếng Anh là bao nhiêu?
+    - Tổng lệ phí phải đóng là bao nhiêu?
+    - Đóng lệ phí ở đâu?
+    - Lệ phí hồ sơ là bao nhiêu tiền?
+
+- intent: hoi_phuong_thuc_tuyen_sinh
+  examples: |
+    - Phương thức tuyển sinh là gì?
+    - Tuyển sinh bằng hình thức nào?
+    - Có thi đánh giá năng lực tiếng Anh không?
+    - Có xét tuyển hồ sơ không?
+    - Có cần thi đầu vào không?
+
+- intent: hoi_quy_trinh_xet_tuyen
+  examples: |
+    - Quy trình xét tuyển như thế nào?
+    - Các bước xét tuyển ra sao?
+    - Có sơ tuyển hồ sơ không?
+    - Tiểu ban chuyên môn đánh giá như thế nào?
+    - Có phỏng vấn chuyên môn không?
+    - Hội đồng tuyển sinh xét tuyển dựa trên gì?
+    - Có cần dự phỏng vấn không?
+    - Có đánh giá năng lực ngoại ngữ không?
+
+- intent: hoi_tieu_chi_trung_tuyen
+  examples: |
+    - Tiêu chí trúng tuyển là gì?
+    - Cách tính điểm trúng tuyển như thế nào?
+    - Đánh giá năng lực tiếng Anh yêu cầu bao nhiêu điểm?
+    - Cần thi những kỹ năng nào trong tiếng Anh đầu vào?
+    - Hội đồng tuyển sinh xét tuyển dựa trên những tiêu chí nào?
+    - Điểm phỏng vấn tối thiểu là bao nhiêu?
+    - Tiêu chí chuyên môn là gì?
+    - Cần đạt những điều kiện nào để trúng tuyển?
+
+- intent: hoi_mien_ngoai_ngu
+  examples: |
+    - Điều kiện miễn thi ngoại ngữ là gì?
+    - Cần chứng chỉ nào để được miễn thi tiếng Anh?
+    - Có bằng đại học ở nước ngoài có được miễn không?
+    - Học ngành ngôn ngữ có được miễn không?
+    - Có cần chứng chỉ B1 không?
+    - Chứng chỉ ngoại ngữ nào được công nhận?
+    - Có cần bằng tốt nghiệp đại học ĐHQG-HCM không?
+    - Chứng chỉ ngoại ngữ có thời hạn bao lâu?
+
+- intent: hoi_cau_truc_de_thi
+  examples: |
+    - Cấu trúc đề thi tiếng Anh như thế nào?
+    - Đề thi đánh giá năng lực tiếng Anh gồm những phần nào?
+    - Thi tiếng Anh đầu vào có bao nhiêu kỹ năng?
+    - Có thể xem cấu trúc đề thi ở đâu?
+    - Đề thi tiếng Anh có phần nghe nói không?
+    - Đề thi có phần viết không?
+    - Đề thi tiếng Anh đầu vào có khó không?
+
+- intent: hoi_on_tap_tieng_anh
+  examples: |
+    - Thời gian ôn tập tiếng Anh là khi nào?
+    - Có lớp ôn tập tiếng Anh không?
+    - Đăng ký ôn tập tiếng Anh ở đâu?
+    - Lớp ôn tập tiếng Anh tổ chức khi nào?
+    - Tôi muốn đăng ký lớp ôn tập tiếng Anh thì làm sao?
+    - Có tài liệu ôn tập tiếng Anh không?
+
+- intent: hoi_dang_ky_online
+  examples: |
+    - Đăng ký online như thế nào?
+    - Link đăng ký trực tuyến là gì?
+    - Tôi muốn nộp hồ sơ online thì làm sao?
+    - Trang web đăng ký xét tuyển là gì?
+
+- intent: hoi_giay_to_ngoai_ngu
+  examples: |
+    - Tôi cần giấy tờ gì để chứng minh năng lực ngoại ngữ?
+    - Chứng chỉ ngoại ngữ nào được chấp nhận?
+    - Có cần bản sao chứng chỉ ngoại ngữ không?
+    - Nếu có chứng chỉ B1 thì có cần gì thêm không?
+    - Bằng tốt nghiệp đại học tiếng Anh có cần chứng chỉ không?
+
+- intent: hoi_ket_qua
+  examples: |
+    - Khi nào có kết quả xét tuyển?
+    - Kết quả xét tuyển công bố ở đâu?
+    - Tôi xem kết quả ở đâu?
+    - Khi nào biết mình trúng tuyển?
+    - Kết quả thi đánh giá năng lực tiếng Anh khi nào có?
+    - Công bố kết quả vào tháng mấy?
+
+- intent: hoi_nhap_hoc
+  examples: |
+    - Khi nào nhập học?
+    - Ngày khai giảng là khi nào?
+    - Nhập học ở đâu?
+    - Thủ tục nhập học gồm những gì?
+    - Tôi cần chuẩn bị gì khi nhập học?
+    - Nhập học có cần giấy báo không?
+
+- intent: hoi_lien_he
+  examples: |
+    - Tôi cần liên hệ ai để được hỗ trợ?
+    - Số điện thoại phòng đào tạo sau đại học là gì?
+    - Email liên hệ tuyển sinh?
+    - Có thể liên hệ qua đâu nếu có thắc mắc?
+    - Tôi muốn hỏi thêm thông tin thì liên hệ ai?
+
+entities:
+  - nganh
+  - ma_nganh
+  - chi_tieu
+  - dia_diem
+  - thoi_gian
+  - loai_ho_so
+  - doi_tuong
+  - le_phi
+  - phuong_thuc
+  - quy_trinh
+  - tieu_chi
+  - chung_chi
+  - bang_cap
+
+# Một số ví dụ entity:
+# nganh: An toàn thông tin, Công nghệ thông tin, Hệ thống thông tin, Khoa học máy tính, Kỹ thuật máy tính
+# ma_nganh: 8480202, 8480201, 8480104, 8480101, 8480106
+# chi_tieu: 21, 49, 35, 63, 21
+# dia_diem: 07-09 Nguyễn Bỉnh Khiêm, P. Bến Nghé, Q.1, TPHCM
+# thoi_gian: 2 năm, ngày 25/5/2025, từ ngày 14/3/2025 - 03/5/2025, tháng 7/2025, tháng 8/2025, 30/5/2025
+# loai_ho_so: bìa hồ sơ, phiếu đăng ký, bản sao văn bằng, bảng điểm, chứng chỉ ngoại ngữ, giấy khám sức khỏe, ảnh 3x4, giấy xác nhận sinh viên thủ khoa, bảng điểm bổ túc kiến thức, giấy chứng nhận đối tượng chính sách, giấy khen, chứng nhận kiểm định chương trình, chứng nhận kiểm định cơ sở đào tạo, túi đựng hồ sơ
+# doi_tuong: sinh viên thủ khoa, đối tượng chính sách, sinh viên liên thông, sinh viên chương trình tiên tiến
+# le_phi: 260.000 đồng, 200.000 đồng
+# phuong_thuc: xét tuyển hồ sơ, phỏng vấn chuyên môn, thi đánh giá năng lực tiếng Anh
+# quy_trinh: sơ tuyển, xét tuyển hồ sơ, phỏng vấn, đánh giá năng lực ngoại ngữ
+# tieu_chi: chuyên môn, năng lực ngoại ngữ, điểm phỏng vấn, chỉ tiêu ngành
+# chung_chi: B1, chứng chỉ ngoại ngữ bậc 3, bậc 4, IELTS, TOEFL, TOEIC
+# bang_cap: bằng đại học, bằng tốt nghiệp, bằng đại học nước ngoài, bằng ngành ngôn ngữ, bằng ĐHQG-HCM
+
+# Bạn có thể mở rộng thêm ví dụ cho từng intent và entity để tăng khả năng nhận diện.

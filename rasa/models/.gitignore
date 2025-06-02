@@ -1,0 +1,4 @@
+# Bỏ qua tất cả các file model
+*
+# Nhưng giữ lại file .gitignore này
+!.gitignore

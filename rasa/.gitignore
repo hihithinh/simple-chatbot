@@ -1,0 +1,6 @@
+# Bỏ qua các file và thư mục tạm thời của Rasa
+.rasa/
+__pycache__/
+*.pyc
+
+domain.yml

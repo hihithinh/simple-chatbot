@@ -1,0 +1,75 @@
+version: "3.1"
+
+stories:
+- story: Hỏi về danh sách ngành và chỉ tiêu chung
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: hoi_danh_sach_nganh
+  - action: utter_ask_nganh
+  - intent: hoi_chi_tieu_chung
+  - action: utter_ask_chi_tieu_chung
+
+- story: Hỏi về điều kiện và miễn ngoại ngữ
+  steps:
+  - intent: hoi_dieu_kien_du_tuyen
+  - action: utter_ask_dieu_kien
+  - intent: hoi_mien_ngoai_ngu
+  - action: utter_ask_mien_ngoai_ngu
+  - intent: hoi_giay_to_ngoai_ngu
+  - action: utter_ask_giay_to_ngoai_ngu
+
+- story: Hỏi về quy trình và tiêu chí
+  steps:
+  - intent: hoi_phuong_thuc_tuyen_sinh
+  - action: utter_ask_phuong_thuc_tuyen_sinh
+  - intent: hoi_quy_trinh_xet_tuyen
+  - action: utter_ask_quy_trinh_xet_tuyen
+  - intent: hoi_tieu_chi_trung_tuyen
+  - action: utter_ask_tieu_chi_trung_tuyen
+
+- story: Hỏi về tiếng Anh
+  steps:
+  - intent: hoi_cau_truc_de_thi
+  - action: utter_ask_cau_truc_de_thi
+  - intent: hoi_on_tap_tieng_anh
+  - action: utter_ask_on_tap_tieng_anh
+
+- story: Hỏi về đăng ký và hồ sơ
+  steps:
+  - intent: hoi_dang_ky_online
+  - action: utter_ask_dang_ky_online
+  - intent: hoi_ho_so_dang_ky
+  - action: utter_ask_ho_so_dang_ky
+  - intent: hoi_le_phi
+  - action: utter_ask_le_phi
+
+- story: Hỏi về kết quả và nhập học
+  steps:
+  - intent: hoi_ket_qua
+  - action: utter_ask_ket_qua
+  - intent: hoi_nhap_hoc
+  - action: utter_ask_nhap_hoc
+
+- story: Hỏi về thời gian và địa điểm
+  steps:
+  - intent: hoi_thoi_gian
+  - action: utter_ask_thoi_gian
+  - intent: hoi_hinh_thuc_dao_tao
+  - action: utter_ask_hinh_thuc_dao_tao
+
+- story: Kết thúc hội thoại
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- story: Hỏi mã ngành sau đó hỏi thông tin chi tiết ngành (có ngữ cảnh)
+  steps:
+  - intent: hoi_ma_nganh
+    entities:
+    - nganh: "Khoa học máy tính"
+  - slot_was_set:
+    - nganh: "Khoa học máy tính"
+  - action: action_tim_thong_tin_nganh
+  - intent: hoi_thong_tin_chi_tiet_nganh
+  - action: action_tim_thong_tin_nganh

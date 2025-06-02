@@ -5,3 +5,16 @@ requests==2.31.0
 pandas==2.0.3
 flask==2.3.3
 vnpreprocess
+
+# FastAPI và Database dependencies
+fastapi==0.103.1
+uvicorn==0.23.2
+sqlalchemy>=1.4.0,<1.5.0
+sqlmodel==0.0.8
+alembic==1.12.0
+psycopg2-binary==2.9.7
+pydantic<2.0.0
+python-jose==3.3.0
+passlib==1.7.4
+python-multipart==0.0.6
+httpx>=0.24.0,<0.25.0
