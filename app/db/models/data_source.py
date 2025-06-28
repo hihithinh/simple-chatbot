@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 from sqlmodel import Field, SQLModel, Relationship
 
+
 class DataSource(SQLModel, table=True):
     __tablename__ = "data_sources"
     
@@ -16,3 +17,4 @@ class DataSource(SQLModel, table=True):
     
     # Relationships
     crawled_contents: List["CrawledContent"] = Relationship(back_populates="data_source")
+    intents: List["RasaIntent"] = Relationship(back_populates="data_source")

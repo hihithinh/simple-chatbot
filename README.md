@@ -7,6 +7,7 @@ Chatbot hỗ trợ tư vấn tuyển sinh thạc sĩ Trường Đại học CNTT
 - pip, venv (quản lý môi trường ảo)
 - SSH client (có sẵn trên macOS/Linux)
 - PostgreSQL (cho CMS và backend)
+- Node.js và npm (cho CMS)
 
 ## 2. Cài đặt
 
@@ -38,6 +39,18 @@ source .venv/bin/activate && python load_env.py --update-rasa
 ### Bước 4: Train mô hình Rasa
 ```bash
 source .venv/bin/activate && cd rasa && rasa train
+```
+
+### Bước 5: Cài đặt và chạy CMS
+```bash
+# Di chuyển vào thư mục CMS
+cd cms
+
+# Cài đặt các dependencies
+npm install
+
+# Chạy CMS trong chế độ development
+npm run dev
 ```
 
 ---
@@ -78,16 +91,28 @@ Bạn có thể thay `mychatbot` bằng tên bất kỳ hoặc bỏ qua để se
 **1. Khởi động FastAPI Backend (port 8000)**  
 (Mở terminal mới)
 ```bash
-source .venv/bin/activate && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+source .venv/bin/activate && uvicorn app.main:app --reload --host 0.0.0.0 --port 8003
 ```
 
-**2. Truy cập API Documentation**  
+**2. Khởi động CMS (port 3000)**  
+(Mở terminal mới)
+```bash
+cd cms && npm run dev
+```
+
+**3. Truy cập CMS**  
 Mở trình duyệt và truy cập:
 ```
-http://localhost:8000/docs
+http://localhost:5173
 ```
 
-**3. Truy cập API Redoc**  
+**4. Truy cập API Documentation**  
+Mở trình duyệt và truy cập:
+```
+http://localhost:8003/docs
+```
+
+**5. Truy cập API Redoc**  
 Mở trình duyệt và truy cập:
 ```
 http://localhost:8000/redoc
@@ -136,6 +161,13 @@ chatbot/
 │   ├── schemas/        # Pydantic schemas
 │   ├── services/       # Business logic
 │   └── main.py         # Entry point cho FastAPI
+├── cms/                # Thư mục chứa mã nguồn CMS (Vue.js)
+│   ├── src/            # Source code
+│   │   ├── components/ # Vue components
+│   │   ├── services/   # API services
+│   │   ├── views/      # Vue views
+│   │   ├── router/     # Vue router
+│   │   └── ...         # Các file khác
 ├── rasa/                # Thư mục chứa mã nguồn Rasa
 │   ├── actions/         # Custom actions cho Rasa
 │   │   ├── __init__.py
@@ -184,6 +216,13 @@ chatbot/
 - **app/schemas/:** Pydantic schemas cho API.
 - **app/api/api_v1/endpoints/:** API endpoints.
 
+### Giải thích chi tiết các file chính của CMS:
+
+- **cms/src/components/:** Vue components cho giao diện người dùng.
+- **cms/src/services/:** API services để giao tiếp với backend.
+- **cms/src/views/:** Vue views cho các trang trong CMS.
+- **cms/src/router/:** Vue router để định nghĩa các routes.
+
 **Lưu ý:**
 - Thư mục `data/` có thể chứa thêm các file như `lookup_tables.yml`, `synonyms.yml`, `test_stories.yml` tuỳ nhu cầu phát triển.
 - Các file/thư mục như `.venv/`, `logs/`, `.gitignore`, `.rasa/`, `.idea/`... là file hệ thống/phát triển, không bắt buộc.
@@ -202,38 +241,13 @@ Dự án sử dụng một seeder script để nhập dữ liệu từ các file
 source .venv/bin/activate && python -m app.db.seeders.rasa_seeder
 ```
 
-Script này sẽ:
-- Đọc dữ liệu từ các file `nlu.yml`, `domain.yml`, `rules.yml`, `stories.yml`
-- Xóa dữ liệu cũ trong database (nếu có)
-- Nhập dữ liệu mới vào các bảng tương ứng
+### Quản lý dữ liệu qua CMS
 
-### Xuất dữ liệu từ Database thành file Rasa
+Sau khi nhập dữ liệu vào database, bạn có thể sử dụng CMS để quản lý:
 
-Để xuất dữ liệu từ database thành các file YAML cho Rasa:
+1. **Quản lý Intent**: Thêm, sửa, xóa các intent trong hệ thống.
+2. **Quản lý Response**: Thêm, sửa, xóa các response tương ứng với intent.
+3. **Quản lý Mẫu câu NLU**: Thêm, sửa, xóa các mẫu câu huấn luyện cho NLU.
+4. **Tương tác với Chatbot**: Kiểm tra chatbot và xem lịch sử tương tác.
 
-```bash
-source .venv/bin/activate && python -m app.db.exporters.rasa_exporter
-```
-
-Script này sẽ:
-- Đọc dữ liệu từ database
-- Tạo các file YAML tương ứng trong thư mục `rasa` và `rasa/data`
-- Các file được tạo ra bao gồm: `domain.yml`, `data/nlu.yml`, `data/rules.yml`, `data/stories.yml`
-
-Sau khi xuất dữ liệu, bạn có thể sử dụng các file này để train lại mô hình Rasa.
-
----
-
-## 11. Một số lưu ý & troubleshooting
-- **Mỗi lệnh cần chạy ở một terminal riêng biệt** để dễ quản lý và dừng tiến trình.
-- Đảm bảo cả 4 tiến trình đều đang chạy trước khi truy cập chatbot.
-- Nếu gặp lỗi CORS, kiểm tra lại proxy và URL truy cập.
-- Nếu gặp lỗi port đã dùng, hãy kiểm tra và dừng các tiến trình cũ.
-- Để dừng server, chỉ cần nhấn `Ctrl+C` tại terminal tương ứng.
-- Nếu muốn chạy local, chỉ cần truy cập `http://localhost:5006` (bỏ qua bước 4).
-- Nếu gặp lỗi khi push lên git, kiểm tra branch và commit đúng.
-- Để loại trừ file không cần thiết khỏi git, đã có sẵn `.gitignore`.
-
----
-
-Nếu cần bổ sung hướng dẫn chi tiết hoặc gặp vấn đề khi chạy, hãy liên hệ để được hỗ trợ!
+Sau khi thay đổi dữ liệu qua CMS, bạn cần huấn luyện lại mô hình Rasa để cập nhật thay đổi.

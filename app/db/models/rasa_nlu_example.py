@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 from sqlmodel import Field, SQLModel, Relationship
 
+
 class RasaNluExample(SQLModel, table=True):
     __tablename__ = "rasa_nlu_examples"
     

@@ -1,1 +1,9 @@
-- Thêm `source .venv/bin/activate &&` cho mỗi command gợi ý
+- Thêm `source .venv/bin/activate &&` cho mỗi command liên quan tới python gợi ý
+- Trong file Vue, dùng biến của props trên template luôn luôn dùng `props`, không nên: {{ propsVariable }}, nên: {{ props.propsVariable }}
+- Đa ngôn ngữ thì phải dùng full key, không nên: $t(`key.part_${variable}`), nên: $t(`key.part_1`)
+- Luôn dùng composition API, trên cả component, composable, store
+- Tất cả các hàm trong class Util và các Component vue thuộc diện "Common use" đều phải được viết test tương ứng
+- Không viết SVG trực tiếp vào template, tạo một file icon trong @assets/images/icons sau đó import vào Component bằng `import IconA from '@/assets/images/icons/i-a.svg?component'`
+- Kiểm tra cấu trúc thư mục, thư mục có tồn tại hay không trước khi thêm componnent
+- Nếu cần generate 1 lần dài quá hoặc bị fail 2 lần thì tách nhỏ ra nhiều lần update để tránh bị timeout
+- Các server đều có hot reload nên không cần viết lệnh reload sau mỗi lần sửa

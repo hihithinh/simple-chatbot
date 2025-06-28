@@ -10,10 +10,10 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
 
-# Set up CORS
+# Set up CORS - cho phép tất cả origins để debug
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=["*"],  # Cho phép tất cả origins trong quá trình phát triển
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
