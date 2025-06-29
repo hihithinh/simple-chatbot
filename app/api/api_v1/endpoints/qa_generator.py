@@ -19,6 +19,7 @@ from app.db.models.rasa_nlu_example import RasaNluExample
 from app.db.database import get_db, engine
 from app.core.config import settings
 from app.utils.gpt_util import GPTUtil
+import asyncio
 
 # Configure logging with more explicit settings
 logging.basicConfig(
@@ -41,6 +42,9 @@ if not settings.TOGETHER_API_KEY:
     raise Exception("TOGETHER_API_KEY is not configured")
 
 router = APIRouter()
+
+# Initialize GPT utility
+gpt_util = GPTUtil()
 
 # Together AI API endpoint
 TOGETHER_API_URL = "https://api.together.xyz/v1/completions"
@@ -458,23 +462,34 @@ async def generate_nlu_examples_for_intent(
         )
     
     # Get the response for this intent
-    response = db.query(RasaResponse).filter(RasaResponse.intent_id == intent_id, RasaResponse.is_default == True).first()
+    response = db.query(RasaResponse).filter(RasaResponse.intent_id == intent_id).first()
     if not response:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Không tìm thấy response cho intent với ID {intent_id}"
         )
     
+    # Get the data source for this intent
+    data_source = None
+    if intent.data_source_id:
+        data_source = db.query(DataSource).filter(DataSource.id == intent.data_source_id).first()
+    
+    # Use a default name if data source is not found
+    data_source_name = data_source.name if data_source else "Chatbot"
+    
     try:
-        # Generate examples in the background
-        background_tasks.add_task(
-            generate_nlu_examples,
-            intent.description,
-            response.response_text,
-            f"Đang tạo câu hỏi cho intent: {intent.name}"
+        # Generate examples directly (not in background)
+        examples = await gpt_util.generate_nlu_examples_for_intent(
+            title=intent.description,
+            content=response.response_text,
+            notification_title=data_source_name,
+            num_examples=5
         )
         
-        return ["Đang tạo câu hỏi trong nền. Vui lòng kiểm tra sau ít phút."]
+        # Save the examples to the database
+        save_nlu_examples(intent_id, examples, db)
+        
+        return examples
     except Exception as e:
         error_message = str(e)
         logger.error(f"Error generating NLU examples: {error_message}")
@@ -535,39 +550,50 @@ def bulk_generate_nlu_examples(
 
 def generate_nlu_examples_for_multiple_intents(intents, db):
     """Generate NLU examples for multiple intents"""
-    for intent in intents:
-        # Get the data source
-        data_source = None
-        if intent.data_source_id:
-            data_source = db.get(DataSource, intent.data_source_id)
+    try:
+        # Chuẩn bị dữ liệu cho bulk generation
+        intents_data = []
+        for intent in intents:
+            # Lấy response cho intent này
+            response = db.exec(
+                select(RasaResponse).where(RasaResponse.intent_id == intent.id).limit(1)
+            ).first()
+            
+            if not response:
+                continue
+                
+            intents_data.append({
+                "id": intent.id,
+                "name": intent.name,
+                "description": intent.description,
+                "response_text": response.response_text
+            })
         
-        if not data_source:
-            continue
-        
-        # Get the response for this intent
-        response = db.exec(
-            select(RasaResponse).where(RasaResponse.intent_id == intent.id).limit(1)
-        ).first()
-        
-        if not response:
-            continue
-        
-        # Generate NLU examples
-        examples = generate_nlu_examples(
-            intent.description or intent.name,
-            response.response_text,
-            data_source.name
+        if not intents_data:
+            logger.warning("No valid intents with responses found for bulk generation")
+            return
+            
+        # Sử dụng GPT để tạo câu hỏi cho tất cả intent cùng một lúc
+        loop = asyncio.get_event_loop()
+        results = loop.run_until_complete(
+            gpt_util.generate_nlu_examples_bulk(intents_data)
         )
         
-        # Save examples
-        for example in examples:
-            nlu_example = RasaNluExample(
-                intent_id=intent.id,
-                text=example
-            )
-            db.add(nlu_example)
-        
+        # Lưu các câu hỏi vào database
+        for intent_id, examples in results.items():
+            for example in examples:
+                nlu_example = RasaNluExample(
+                    intent_id=intent_id,
+                    text=example
+                )
+                db.add(nlu_example)
+            
         db.commit()
+        logger.info(f"Successfully generated and saved NLU examples for {len(results)} intents")
+        
+    except Exception as e:
+        logger.error(f"Error in bulk NLU example generation: {str(e)}")
+        # Không raise exception vì đây là background task
 
 @router.get("/intents/{data_source_id}/", response_model=List[IntentResponse])
 def get_intents_for_data_source(
@@ -604,74 +630,29 @@ def get_intents_for_data_source(
 
 def generate_nlu_examples(title, content, notification_title):
     """Generate NLU examples for an intent"""
-    prompt = f"""
-    Hãy giúp tôi tạo ra ít nhât 5 câu hỏi mà người dùng có thể hỏi được suy luận từ tiêu đề "{title}" và nội dung "{content}" trong thông báo có tiêu đề "{notification_title}".
-    
-    Yêu cầu:
-    1. Câu hỏi phải liên quan trực tiếp đến nội dung.
-    2. Câu hỏi phải đa dạng về cách hỏi.
-    3. Câu hỏi phải tự nhiên như người dùng thực sự hỏi.
-    4. Mỗi câu hỏi phải bắt đầu bằng "Câu Hỏi Là: " và kết thúc bằng dấu chấm hỏi.
-    5. Câu hỏi phải bằng tiếng Việt.
-    
-    Ví dụ:
-    Câu Hỏi Là: Làm thế nào để tôi đăng ký tài khoản?
-    """
-    
     try:
-        # First try the chat completions endpoint
-        try:
-            response = httpx.post(
-                "https://api.together.xyz/v1/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {settings.TOGETHER_API_KEY}",
-                    "Content-Type": "application/json"
-                },
-                json={
-                    "model": "meta-llama/Llama-3.1-70B-Instruct",
-                    "messages": [
-                        {
-                            "role": "user",
-                            "content": prompt
-                        }
-                    ]
-                },
-                timeout=60.0  # Add timeout to prevent hanging
+        # Create a new event loop for non-async contexts
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        examples = loop.run_until_complete(
+            gpt_util.generate_nlu_examples_for_intent(
+                title=title,
+                content=content,
+                notification_title=notification_title,
+                num_examples=5
             )
-            response.raise_for_status()
-            
-            # Extract questions from the response
-            text = response.json()["choices"][0]["message"]["content"]
-            matches = re.findall(r"Câu Hỏi Là:\s*(.+?)(?:\?|\.|\!|\n)", text)
-            return [q.strip() + "?" for q in matches]
-        except httpx.HTTPError:
-            # If chat completions fails, try the regular completions endpoint
-            response = httpx.post(
-                TOGETHER_API_URL,
-                headers={
-                    "Authorization": f"Bearer {settings.TOGETHER_API_KEY}",
-                    "Content-Type": "application/json"
-                },
-                json={
-                    "model": "meta-llama/Llama-3.1-70B-Instruct",
-                    "prompt": prompt,
-                    "max_tokens": 1024,
-                    "temperature": 0.7
-                },
-                timeout=60.0  # Add timeout to prevent hanging
-            )
-            response.raise_for_status()
-            
-            # Extract questions from the response
-            text = response.json()["choices"][0]["text"]
-            matches = re.findall(r"Câu Hỏi Là:\s*(.+?)(?:\?|\.|\!|\n)", text)
-            return [q.strip() + "?" for q in matches]
-    except httpx.HTTPError as e:
-        # Log more details about the error
+        )
+        loop.close()
+        return examples
+    except Exception as e:
+        # Log chi tiết lỗi
         error_detail = f"Error generating NLU examples: {str(e)}"
-        if hasattr(e, 'response') and e.response is not None:
-            error_detail += f"\nResponse status: {e.response.status_code}"
-            error_detail += f"\nResponse body: {e.response.text}"
+        logger.error(error_detail)
+        
+        if "rate_limit_exceeded" in str(e).lower():
+            error_detail = "Đã vượt quá giới hạn tốc độ API. Vui lòng thử lại sau ít phút."
+        elif "context_length_exceeded" in str(e).lower():
+            error_detail = "Nội dung quá dài cho mô hình AI. Vui lòng chia nhỏ nội dung."
         
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -53,7 +53,10 @@
               :intents="createdIntents"
               :is-loading="isLoading"
               v-model:selected-intents="selectedIntents"
+              :data-source-id="dataSourceId"
+              :nlu-examples-by-intent="nluExamplesByIntent"
               @generate-examples="handleGenerateNluExamples"
+              @start-training="handleStartTraining"
             />
           </div>
 
@@ -70,14 +73,11 @@
       <template v-else>
         <CardBox class="mb-6">
           <div class="text-center py-12">
+            <BaseButton v-if="isLoading" :icon="mdiLoading" color="info" label="Đang tải..." loading />
             <p class="text-gray-500">Không tìm thấy nguồn dữ liệu</p>
           </div>
         </CardBox>
       </template>
-
-      <div v-if="isLoading" class="flex justify-center items-center h-64">
-        <BaseButton :icon="mdiLoading" color="info" label="Đang tải..." loading />
-      </div>
     </SectionMain>
   </LayoutAuthenticated>
 </template>
@@ -98,6 +98,8 @@ import QAGenerator from '@/components/data-ingestion/QAGenerator.vue'
 import RasaTrainer from '@/components/data-ingestion/RasaTrainer.vue'
 import DataSourceService from '@/services/data-source.service'
 import QAGeneratorService from '@/services/qa-generator.service'
+import IntentService from '@/services/intent.service'
+import NluExampleService from '@/services/nlu-example.service'
 
 const route = useRoute()
 const notification = ref(null)
@@ -109,6 +111,8 @@ const steps = ['Trích xuất thông tin chính', 'Tạo dữ liệu câu hỏi'
 const keyPoints = ref([])
 const createdIntents = ref([])
 const selectedIntents = ref([])
+const hasExistingData = ref(false)
+const nluExamplesByIntent = ref({})
 
 const dataSourceId = computed(() => Number(route.params.id))
 
@@ -140,6 +144,9 @@ const loadDataSource = async () => {
       crawledContent.value = response.data.crawled_content
       console.log('Data source loaded:', dataSource.value)
       console.log('Crawled content loaded:', crawledContent.value)
+
+      // Sau khi load data source, kiểm tra xem có intent nào không
+      await checkExistingIntents()
     } else {
       console.error('Invalid response structure:', response)
       alert('Lỗi định dạng phản hồi từ API')
@@ -149,6 +156,52 @@ const loadDataSource = async () => {
     alert(error.userMessage || `Lỗi khi tải dữ liệu: ${error.message}`)
   } finally {
     isLoading.value = false
+  }
+}
+
+const checkExistingIntents = async () => {
+  try {
+    // Kiểm tra xem có intent nào cho data source này không
+    const intentsResponse = await QAGeneratorService.getIntentsForDataSource(dataSourceId.value)
+
+    if (intentsResponse && intentsResponse.data && intentsResponse.data.length > 0) {
+      hasExistingData.value = true
+      createdIntents.value = intentsResponse.data
+      
+      // Nếu có intents, load nlu examples cho mỗi intent
+      await loadNluExamples(intentsResponse.data)
+      
+      // Nếu có dữ liệu, chuyển đến bước 2
+      currentStep.value = 1
+    }
+  } catch (error) {
+    console.error('Error checking existing intents:', error)
+  }
+}
+
+const loadNluExamples = async (intents) => {
+  try {
+    // Load NLU examples cho mỗi intent
+    for (const intent of intents) {
+      const examplesResponse = await NluExampleService.getNluExamples({
+        intent_id: intent.intent_id,
+        limit: 10,
+        skip: 0
+      })
+      
+      // Kiểm tra cấu trúc phản hồi
+      if (examplesResponse && Array.isArray(examplesResponse.data)) {
+        // API trả về mảng trực tiếp
+        nluExamplesByIntent.value[intent.intent_id] = examplesResponse.data.map(item => item.text)
+      } else if (examplesResponse && examplesResponse.data && examplesResponse.data.items) {
+        // API trả về cấu trúc { data: { items: [...] } }
+        nluExamplesByIntent.value[intent.intent_id] = examplesResponse.data.items.map(item => item.text)
+      }
+    }
+    
+    console.log('Loaded NLU examples:', nluExamplesByIntent.value)
+  } catch (error) {
+    console.error('Error loading NLU examples:', error)
   }
 }
 
@@ -191,9 +244,20 @@ const handleGenerateNluExamples = async () => {
   isLoading.value = true
   try {
     for (const intentId of selectedIntents.value) {
-      await QAGeneratorService.generateNluExamples(intentId)
+      const response = await QAGeneratorService.generateNluExamples(intentId)
+      // Lưu các câu hỏi đã tạo vào nluExamplesByIntent
+      if (response && response.data) {
+        // Kiểm tra cấu trúc phản hồi
+        if (Array.isArray(response.data)) {
+          nluExamplesByIntent.value[intentId] = response.data
+        } else if (response.data.items) {
+          nluExamplesByIntent.value[intentId] = response.data.items
+        }
+      }
     }
-    alert(`Đã bắt đầu tạo câu hỏi cho ${selectedIntents.value.length} intent`)
+
+    await loadDataSource()
+
     currentStep.value = 2
   } catch (error) {
     console.error('Error generating NLU examples:', error)
@@ -201,6 +265,12 @@ const handleGenerateNluExamples = async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+const handleStartTraining = async () => {
+  // Chuyển đến bước 3 (RasaTrainer)
+  currentStep.value = 2
+  alert('Đã chuyển đến bước huấn luyện mô hình')
 }
 
 const handleTrainRasa = async () => {

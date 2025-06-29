@@ -467,3 +467,151 @@ Vui lòng tổng hợp các điểm thông tin chính ngay bây giờ:"""
         except Exception as e:
             logger.error(f"Error summarizing key points: {str(e)}")
             raise
+
+    async def generate_nlu_examples_for_intent(self, title: str, content: str, notification_title: str = "", num_examples: int = 5) -> List[str]:
+        """
+        Generate NLU examples for an intent using GPT
+        
+        Args:
+            title: The title or name of the intent
+            content: The content or response text for the intent
+            notification_title: Optional notification title for context
+            num_examples: Number of examples to generate (minimum)
+            
+        Returns:
+            List of generated NLU examples
+        """
+        system_message = {
+            "role": "system", 
+            "content": "Bạn là một trợ lý AI chuyên tạo câu hỏi mẫu cho chatbot. "
+                      "Nhiệm vụ của bạn là tạo ra các câu hỏi đa dạng mà người dùng có thể hỏi "
+                      "dựa trên tiêu đề và nội dung được cung cấp."
+        }
+        
+        user_message = {
+            "role": "user",
+            "content": f"""Hãy giúp tôi tạo ra ít nhất {num_examples} câu hỏi mà người dùng có thể hỏi được suy luận từ tiêu đề "{title}" và nội dung "{content}"{' trong thông báo có tiêu đề "' + notification_title + '"' if notification_title else ''}.
+            
+Yêu cầu:
+1. Câu hỏi phải liên quan trực tiếp đến nội dung.
+2. Câu hỏi phải đa dạng về cách hỏi.
+3. Câu hỏi phải tự nhiên như người dùng thực sự hỏi.
+4. Mỗi câu hỏi phải bắt đầu bằng "Câu Hỏi Là: " và kết thúc bằng dấu chấm hỏi.
+5. Câu hỏi phải bằng tiếng Việt.
+
+Ví dụ:
+Câu Hỏi Là: Làm thế nào để tôi đăng ký tài khoản?
+"""
+        }
+        
+        messages = [system_message, user_message]
+        
+        try:
+            response = await self.chat_completion(
+                messages=messages,
+                temperature=0.7,
+                max_tokens=1024,
+                model=self.default_model
+            )
+            
+            # Extract questions from the response
+            matches = re.findall(r"Câu Hỏi Là:\s*(.+?)(?:\?|\.|\!|\n)", response)
+            return [q.strip() + "?" for q in matches]
+        except Exception as e:
+            logger.error(f"Error generating NLU examples: {str(e)}")
+            raise
+    
+    async def generate_nlu_examples_bulk(self, intents_data: List[dict]) -> Dict[int, List[str]]:
+        """
+        Generate NLU examples for multiple intents in bulk
+        
+        Args:
+            intents_data: List of dictionaries with intent information
+                Each dictionary should have: id, name/description, response_text
+                
+        Returns:
+            Dictionary mapping intent_id to list of generated examples
+        """
+        system_message = {
+            "role": "system", 
+            "content": "Bạn là một trợ lý AI chuyên tạo câu hỏi mẫu cho chatbot. "
+                      "Nhiệm vụ của bạn là tạo ra các câu hỏi đa dạng cho nhiều intent khác nhau "
+                      "dựa trên thông tin được cung cấp."
+        }
+        
+        # Prepare the content for the prompt
+        intents_prompt = ""
+        for i, intent in enumerate(intents_data):
+            intent_id = intent.get("id")
+            intent_name = intent.get("name") or intent.get("description") or f"Intent {intent_id}"
+            response_text = intent.get("response_text", "")
+            
+            intents_prompt += f"INTENT #{i+1} [ID: {intent_id}]:\n"
+            intents_prompt += f"Tên: {intent_name}\n"
+            intents_prompt += f"Nội dung phản hồi: {response_text}\n\n"
+        
+        user_message = {
+            "role": "user",
+            "content": f"""Hãy tạo câu hỏi mẫu cho các intent sau đây:
+
+{intents_prompt}
+
+Yêu cầu:
+1. Tạo ít nhất 5 câu hỏi cho mỗi intent.
+2. Câu hỏi phải liên quan trực tiếp đến nội dung của intent.
+3. Câu hỏi phải đa dạng về cách hỏi.
+4. Câu hỏi phải tự nhiên như người dùng thực sự hỏi.
+5. Định dạng kết quả như sau:
+
+INTENT #1 [ID: <intent_id>]:
+- Câu hỏi 1
+- Câu hỏi 2
+- Câu hỏi 3
+...
+
+INTENT #2 [ID: <intent_id>]:
+- Câu hỏi 1
+...
+
+Vui lòng tạo câu hỏi cho tất cả các intent ngay bây giờ:"""
+        }
+        
+        messages = [system_message, user_message]
+        
+        try:
+            response = await self.chat_completion(
+                messages=messages,
+                temperature=0.7,
+                max_tokens=4000,  # Tăng max_tokens vì đây là bulk generation
+                model=self.default_model
+            )
+            
+            # Parse the response to extract questions for each intent
+            result = {}
+            current_intent_id = None
+            current_questions = []
+            
+            # Regex pattern to match intent headers and questions
+            intent_pattern = r"INTENT #\d+\s*\[ID:\s*(\d+)\]:"
+            question_pattern = r"[-•]\s*(.+?)(?=\n[-•]|\n\s*\n|\n\s*INTENT|\Z)"
+            
+            # Find all intent sections
+            intent_sections = re.split(intent_pattern, response)[1:]  # Skip the first empty element
+            
+            # Process each intent section
+            for i in range(0, len(intent_sections), 2):
+                if i + 1 < len(intent_sections):
+                    intent_id = int(intent_sections[i])
+                    questions_text = intent_sections[i + 1]
+                    
+                    # Extract questions from this section
+                    questions = re.findall(question_pattern, questions_text, re.DOTALL)
+                    questions = [q.strip() for q in questions if q.strip()]
+                    
+                    if questions:
+                        result[intent_id] = questions
+            
+            return result
+        except Exception as e:
+            logger.error(f"Error generating bulk NLU examples: {str(e)}")
+            raise
