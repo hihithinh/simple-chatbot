@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue'
-import { mdiRobotExcited, mdiLoading, mdiCheck, mdiAlert } from '@mdi/js'
+import { ref, onUnmounted, computed } from 'vue'
+import { mdiRobotExcited, mdiLoading, mdiCheck, mdiAlert, mdiConsole, mdiChevronDown, mdiChevronUp } from '@mdi/js'
 import BaseButton from '@/components/BaseButton.vue'
 import CardBoxComponentTitle from '@/components/CardBoxComponentTitle.vue'
 import BaseIcon from '@/components/BaseIcon.vue'
@@ -19,81 +19,281 @@ const isTraining = ref(false)
 const isComplete = ref(false)
 const hasError = ref(false)
 const trainingStatus = ref('')
+const currentTaskId = ref(null)
+const pollingInterval = ref(null)
+const taskLogs = ref([])
+const showLogs = ref(false)
+const currentTask = ref(null)
+const taskHistory = ref([])
 const trainingSteps = ref([
-  { id: 1, text: 'Chuẩn bị dữ liệu huấn luyện', done: false, active: false },
-  { id: 2, text: 'Xuất dữ liệu NLU', done: false, active: false },
-  { id: 3, text: 'Xuất dữ liệu Domain', done: false, active: false },
-  { id: 4, text: 'Xuất dữ liệu Rules và Stories', done: false, active: false },
-  { id: 5, text: 'Huấn luyện mô hình Rasa', done: false, active: false }
+  { id: 1, text: 'Xuất dữ liệu từ PostgreSQL', done: false, active: false, taskId: null, logs: [] },
+  { id: 2, text: 'Huấn luyện mô hình Rasa', done: false, active: false, taskId: null, logs: [] },
+  { id: 3, text: 'Khởi động lại Rasa server', done: false, active: false, taskId: null, logs: [] }
 ])
+
+const formattedTime = computed(() => {
+  if (!currentTask.value || !currentTask.value.start_time) return ''
+  
+  const startTime = new Date(currentTask.value.start_time)
+  const endTime = currentTask.value.end_time ? new Date(currentTask.value.end_time) : new Date()
+  const durationMs = endTime - startTime
+  
+  // Format duration as mm:ss
+  const minutes = Math.floor(durationMs / 60000)
+  const seconds = Math.floor((durationMs % 60000) / 1000)
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+})
 
 const showNotification = (type, message) => {
   emit('notification', { type, message })
 }
 
+// Hàm kiểm tra trạng thái task
+const checkTaskStatus = async () => {
+  if (!currentTaskId.value) return
+  
+  try {
+    const response = await RasaIntegrationService.getTaskStatus(currentTaskId.value)
+    currentTask.value = response
+    
+    // Cập nhật logs
+    if (response.logs && response.logs.length > 0) {
+      taskLogs.value = response.logs
+      
+      // Cập nhật logs cho bước hiện tại
+      const currentStepIndex = trainingSteps.value.findIndex(step => step.active)
+      if (currentStepIndex !== -1) {
+        trainingSteps.value[currentStepIndex].logs = response.logs
+      }
+    }
+    
+    if (response.status === 'completed') {
+      // Task hoàn thành, chuyển sang bước tiếp theo
+      return true
+    } else if (response.status === 'error') {
+      // Task lỗi, dừng quá trình
+      hasError.value = true
+      trainingStatus.value = `Lỗi: ${response.error || response.message}`
+      showNotification('danger', `Lỗi: ${response.error || response.message}`)
+      clearInterval(pollingInterval.value)
+      isTraining.value = false
+      return false
+    }
+    
+    // Cập nhật trạng thái
+    trainingStatus.value = response.message
+    return false
+  } catch (error) {
+    console.error('Error checking task status:', error)
+    return false
+  }
+}
+
+// Bước 1: Xuất dữ liệu từ PostgreSQL
+const exportData = async () => {
+  trainingSteps.value[0].active = true
+  trainingStatus.value = 'Đang xuất dữ liệu từ PostgreSQL ra các file Rasa...'
+  taskLogs.value = []
+  
+  try {
+    const response = await RasaIntegrationService.exportData()
+    currentTaskId.value = response.task_id
+    trainingSteps.value[0].taskId = response.task_id
+    
+    // Đợi cho đến khi task hoàn thành
+    pollingInterval.value = setInterval(async () => {
+      const completed = await checkTaskStatus()
+      if (completed) {
+        clearInterval(pollingInterval.value)
+        trainingSteps.value[0].done = true
+        trainingSteps.value[0].active = false
+        
+        // Lưu task vào lịch sử
+        if (currentTask.value) {
+          taskHistory.value.push({...currentTask.value, step: 1})
+        }
+        
+        // Chuyển sang bước tiếp theo
+        trainModel()
+      }
+    }, 2000)
+  } catch (error) {
+    console.error('Error exporting data:', error)
+    hasError.value = true
+    trainingStatus.value = `Lỗi khi xuất dữ liệu: ${error.response?.data?.detail || error.message}`
+    showNotification('danger', `Lỗi khi xuất dữ liệu: ${error.response?.data?.detail || error.message}`)
+    isTraining.value = false
+    trainingSteps.value[0].active = false
+  }
+}
+
+// Bước 2: Huấn luyện mô hình Rasa
+const trainModel = async () => {
+  trainingSteps.value[1].active = true
+  trainingStatus.value = 'Đang huấn luyện mô hình Rasa...'
+  taskLogs.value = []
+  
+  try {
+    const response = await RasaIntegrationService.trainModel()
+    currentTaskId.value = response.task_id
+    trainingSteps.value[1].taskId = response.task_id
+    
+    // Đợi cho đến khi task hoàn thành
+    pollingInterval.value = setInterval(async () => {
+      const completed = await checkTaskStatus()
+      if (completed) {
+        clearInterval(pollingInterval.value)
+        trainingSteps.value[1].done = true
+        trainingSteps.value[1].active = false
+        
+        // Lưu task vào lịch sử
+        if (currentTask.value) {
+          taskHistory.value.push({...currentTask.value, step: 2})
+        }
+        
+        // Chuyển sang bước tiếp theo
+        restartServer()
+      }
+    }, 2000)
+  } catch (error) {
+    console.error('Error training model:', error)
+    hasError.value = true
+    trainingStatus.value = `Lỗi khi huấn luyện mô hình: ${error.response?.data?.detail || error.message}`
+    showNotification('danger', `Lỗi khi huấn luyện mô hình: ${error.response?.data?.detail || error.message}`)
+    isTraining.value = false
+    trainingSteps.value[1].active = false
+  }
+}
+
+// Bước 3: Khởi động lại Rasa server
+const restartServer = async () => {
+  trainingSteps.value[2].active = true
+  trainingStatus.value = 'Đang khởi động lại Rasa server...'
+  taskLogs.value = []
+  
+  try {
+    const response = await RasaIntegrationService.restartServer()
+    currentTaskId.value = response.task_id
+    trainingSteps.value[2].taskId = response.task_id
+    
+    // Đợi cho đến khi task hoàn thành
+    pollingInterval.value = setInterval(async () => {
+      const completed = await checkTaskStatus()
+      if (completed) {
+        clearInterval(pollingInterval.value)
+        trainingSteps.value[2].done = true
+        trainingSteps.value[2].active = false
+        
+        // Lưu task vào lịch sử
+        if (currentTask.value) {
+          taskHistory.value.push({...currentTask.value, step: 3})
+        }
+        
+        // Hoàn thành
+        isComplete.value = true
+        trainingStatus.value = 'Đã hoàn thành huấn luyện mô hình!'
+        showNotification('success', 'Đã hoàn thành huấn luyện mô hình Rasa!')
+        isTraining.value = false
+        
+        // Lưu toàn bộ quá trình vào localStorage
+        saveTrainingHistory()
+      }
+    }, 2000)
+  } catch (error) {
+    console.error('Error restarting server:', error)
+    hasError.value = true
+    trainingStatus.value = `Lỗi khi khởi động lại server: ${error.response?.data?.detail || error.message}`
+    showNotification('danger', `Lỗi khi khởi động lại server: ${error.response?.data?.detail || error.message}`)
+    isTraining.value = false
+    trainingSteps.value[2].active = false
+  }
+}
+
+// Lưu lịch sử huấn luyện vào localStorage
+const saveTrainingHistory = () => {
+  try {
+    const history = JSON.parse(localStorage.getItem('rasaTrainingHistory') || '[]')
+    history.push({
+      id: Date.now(),
+      timestamp: new Date().toISOString(),
+      steps: trainingSteps.value.map(step => ({
+        id: step.id,
+        text: step.text,
+        taskId: step.taskId,
+        logs: step.logs
+      })),
+      successful: isComplete.value
+    })
+    localStorage.setItem('rasaTrainingHistory', JSON.stringify(history))
+  } catch (error) {
+    console.error('Error saving training history:', error)
+  }
+}
+
+// Hàm bắt đầu quá trình huấn luyện
 const handleTrainRasa = async () => {
   isTraining.value = true
   hasError.value = false
   isComplete.value = false
+  showLogs.value = false
+  taskLogs.value = []
+  taskHistory.value = []
+  currentTask.value = null
   
   // Reset training steps
   trainingSteps.value.forEach(step => {
     step.done = false
     step.active = false
+    step.taskId = null
+    step.logs = []
   })
   
-  try {
-    // Step 1: Preparing data
-    trainingSteps.value[0].active = true
-    trainingStatus.value = 'Đang chuẩn bị dữ liệu huấn luyện...'
-    await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate preparation time
-    trainingSteps.value[0].done = true
-    trainingSteps.value[0].active = false
-    
-    // Step 2: Export NLU data
-    trainingSteps.value[1].active = true
-    trainingStatus.value = 'Đang xuất dữ liệu NLU...'
-    await RasaIntegrationService.exportNlu()
-    trainingSteps.value[1].done = true
-    trainingSteps.value[1].active = false
-    
-    // Step 3: Export Domain data
-    trainingSteps.value[2].active = true
-    trainingStatus.value = 'Đang xuất dữ liệu Domain...'
-    await RasaIntegrationService.exportDomain()
-    trainingSteps.value[2].done = true
-    trainingSteps.value[2].active = false
-    
-    // Step 4: Export Rules and Stories
-    trainingSteps.value[3].active = true
-    trainingStatus.value = 'Đang xuất dữ liệu Rules và Stories...'
-    await RasaIntegrationService.exportRulesAndStories()
-    trainingSteps.value[3].done = true
-    trainingSteps.value[3].active = false
-    
-    // Step 5: Train Rasa model
-    trainingSteps.value[4].active = true
-    trainingStatus.value = 'Đang huấn luyện mô hình Rasa...'
-    await RasaIntegrationService.trainModel()
-    trainingSteps.value[4].done = true
-    trainingSteps.value[4].active = false
-    
-    // Complete
-    isComplete.value = true
-    trainingStatus.value = 'Đã hoàn thành huấn luyện mô hình!'
-    showNotification('success', 'Đã hoàn thành huấn luyện mô hình Rasa!')
-    
-    // Emit train event to parent
-    emit('train')
-  } catch (error) {
-    console.error('Error training Rasa:', error)
-    hasError.value = true
-    trainingStatus.value = `Lỗi: ${error.message}`
-    showNotification('danger', `Lỗi khi huấn luyện mô hình: ${error.response?.data?.detail || error.message}`)
-  } finally {
-    isTraining.value = false
+  // Bắt đầu từ bước 1
+  exportData()
+}
+
+// Hàm chuyển đổi hiển thị logs
+const toggleLogs = () => {
+  showLogs.value = !showLogs.value
+}
+
+// Hàm hiển thị logs của một bước cụ thể
+const showStepLogs = (step) => {
+  if (step.logs && step.logs.length > 0) {
+    taskLogs.value = step.logs
+    showLogs.value = true
   }
 }
+
+// Dọn dẹp khi component bị hủy
+onUnmounted(() => {
+  if (pollingInterval.value) {
+    clearInterval(pollingInterval.value)
+  }
+})
+
+// Khôi phục lịch sử huấn luyện từ localStorage khi component được tạo
+const loadTrainingHistory = () => {
+  try {
+    const lastTraining = JSON.parse(localStorage.getItem('rasaTrainingHistory') || '[]').pop()
+    if (lastTraining && lastTraining.successful) {
+      isComplete.value = true
+      trainingStatus.value = 'Đã hoàn thành huấn luyện mô hình!'
+      
+      // Khôi phục trạng thái các bước
+      lastTraining.steps.forEach((historyStep, index) => {
+        if (index < trainingSteps.value.length) {
+          trainingSteps.value[index].done = true
+          trainingSteps.value[index].logs = historyStep.logs || []
+        }
+      })
+    }
+  } catch (error) {
+    console.error('Error loading training history:', error)
+  }
+}
+
+loadTrainingHistory()
 </script>
 
 <template>
@@ -134,6 +334,9 @@ const handleTrainRasa = async () => {
             ]"
           >
             {{ trainingStatus }}
+            <span v-if="isTraining && currentTask" class="text-sm ml-2 text-gray-500">
+              ({{ formattedTime }})
+            </span>
           </span>
         </div>
       </div>
@@ -173,6 +376,50 @@ const handleTrainRasa = async () => {
           >
             {{ step.text }}
           </span>
+          
+          <BaseButton
+            v-if="step.logs && step.logs.length > 0"
+            :icon="mdiConsole"
+            color="info"
+            small
+            outline
+            class="ml-2"
+            @click="showStepLogs(step)"
+          />
+        </div>
+      </div>
+      
+      <!-- Log Console -->
+      <div class="mt-6">
+        <div 
+          class="flex items-center justify-between p-2 bg-gray-100 rounded-t cursor-pointer"
+          @click="toggleLogs"
+        >
+          <div class="flex items-center">
+            <BaseIcon :path="mdiConsole" class="text-gray-700" size="20" />
+            <span class="ml-2 font-medium text-gray-700">Logs</span>
+          </div>
+          <BaseIcon 
+            :path="showLogs ? mdiChevronUp : mdiChevronDown" 
+            class="text-gray-700" 
+            size="20" 
+          />
+        </div>
+        
+        <div 
+          v-if="showLogs" 
+          class="bg-gray-900 text-green-400 p-4 rounded-b font-mono text-sm overflow-auto"
+          style="max-height: 300px; min-height: 100px;"
+        >
+          <div v-if="taskLogs.length === 0" class="text-gray-400">
+            Chưa có logs nào được ghi lại...
+          </div>
+          <div v-else>
+            <div v-for="(log, index) in taskLogs" :key="index" class="mb-1">
+              <span v-if="log.startsWith('ERROR:')" class="text-red-400">{{ log }}</span>
+              <span v-else>{{ log }}</span>
+            </div>
+          </div>
         </div>
       </div>
       

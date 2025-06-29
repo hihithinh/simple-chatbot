@@ -3,6 +3,7 @@ import { BaseApiService } from './base-api.service'
 export class RasaIntegrationService extends BaseApiService {
   constructor() {
     super({ urlPrefix: 'rasa/' })
+    this.trainingUrlPrefix = 'rasa-training/'
   }
 
   /**
@@ -75,13 +76,46 @@ export class RasaIntegrationService extends BaseApiService {
   }
 
   /**
-   * Huấn luyện lại mô hình Rasa với dữ liệu từ cơ sở dữ liệu
+   * Xuất dữ liệu từ PostgreSQL ra các file Rasa
+   * @returns {Promise} - Promise chứa kết quả xuất dữ liệu
+   */
+  exportData() {
+    return this.apiUtil.post({
+      url: `${this.trainingUrlPrefix}export-data/`,
+      data: {}
+    })
+  }
+
+  /**
+   * Huấn luyện mô hình Rasa
    * @returns {Promise} - Promise chứa kết quả huấn luyện
    */
   trainModel() {
     return this.apiUtil.post({
-      url: `${this.urlPrefix}train/`,
+      url: `${this.trainingUrlPrefix}train/`,
       data: {}
+    })
+  }
+
+  /**
+   * Khởi động lại Rasa server
+   * @returns {Promise} - Promise chứa kết quả khởi động lại
+   */
+  restartServer() {
+    return this.apiUtil.post({
+      url: `${this.trainingUrlPrefix}restart/`,
+      data: {}
+    })
+  }
+
+  /**
+   * Lấy trạng thái của một task
+   * @param {String} taskId - ID của task
+   * @returns {Promise} - Promise chứa trạng thái của task
+   */
+  getTaskStatus(taskId) {
+    return this.apiUtil.get({
+      url: `${this.trainingUrlPrefix}task/${taskId}`
     })
   }
 }

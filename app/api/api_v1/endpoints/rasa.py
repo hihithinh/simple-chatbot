@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlmodel import Session, select
 import httpx
 import os
-import subprocess
 from datetime import datetime
 
 from app.db.database import get_db, engine
@@ -11,7 +10,6 @@ from app.db.models.rasa_intent import RasaIntent
 from app.db.models.rasa_response import RasaResponse
 from app.db.models.rasa_nlu_example import RasaNluExample
 from app.core.config import settings
-from app.db.exporters.rasa_exporter import export_nlu, export_domain, export_rules, export_stories, ensure_dir_exists, RASA_DIR
 
 router = APIRouter()
 
@@ -73,42 +71,3 @@ async def chat_with_rasa(
             }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error communicating with Rasa: {str(e)}")
-
-@router.post("/train/")
-async def train_rasa_model(
-    background_tasks: BackgroundTasks,
-    session: Session = Depends(get_db)
-):
-    """
-    Generate Rasa training files from database and train the model
-    """
-    # Start training in the background
-    background_tasks.add_task(
-        _train_rasa_model_task,
-        session
-    )
-    
-    return {"status": "Training started in the background"}
-
-async def _train_rasa_model_task(session: Session):
-    """
-    Background task to generate Rasa training files and train the model
-    """
-    try:
-        # Sử dụng các hàm từ rasa_exporter để tạo các file training
-        export_nlu(session)
-        export_domain(session)
-        export_rules(session)
-        export_stories(session)
-        
-        # Train the model
-        subprocess.run(
-            ["cd", RASA_DIR, "&&", "source", ".venv/bin/activate", "&&", "python", "-m", "rasa", "train"],
-            shell=True,
-            check=True
-        )
-        
-        return {"status": "success", "message": "Model trained successfully"}
-    except Exception as e:
-        print(f"Error training Rasa model: {str(e)}")
-        return {"status": "error", "message": str(e)}
