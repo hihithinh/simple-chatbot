@@ -1,7 +1,7 @@
 rasa[transformers]==3.5.10
 rasa-sdk==3.5.1
 python-dotenv==1.0.0
-requests==2.31.0
+requests==2.33.0
 pandas==2.0.3
 flask==2.3.3
 vnpreprocess
